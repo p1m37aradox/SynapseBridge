@@ -1,0 +1,70 @@
+from mcp.server.fastmcp import FastMCP
+from starlette.applications import Starlette
+from starlette.responses import HTMLResponse
+from starlette.routing import Route, Mount
+from starlette.staticfiles import StaticFiles
+import os
+import uvicorn
+
+# Set the path explicitly
+ROOT_DIR = "/mnt/SynapseBridge"
+mcp = FastMCP("SynapseBridge")
+
+@mcp.tool()
+async def check_mount():
+    return f"Accessing: {ROOT_DIR}"
+
+# Updated UI handler to show dynamic content
+async def serve_ui(request):
+    html = """
+    <html>
+    <head>
+        <title>Synapse Bridge Index</title>
+        <style>
+            body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+            ul { list-style-type: none; }
+            li { margin: 5px 0; }
+            a { text-decoration: none; color: #007bff; }
+            a:hover { text-decoration: underline; }
+            .folder { font-weight: bold; color: #333; margin-top: 15px; }
+        </style>
+    </head>
+    <body>
+        <h1>🌉 Synapse Bridge Node</h1>
+        <p>Status: 🟢 Online</p>
+        <hr>
+        <ul>
+    """
+    
+    # Walk through the shared zone and build links
+    for root, dirs, files in os.walk(ROOT_DIR):
+        rel_path = os.path.relpath(root, ROOT_DIR)
+        if rel_path == ".":
+            display_path = "Root"
+            prefix = ""
+        else:
+            display_path = rel_path
+            prefix = rel_path + "/"
+            html += f"<li class='folder'>📂 {display_path}/</li>"
+
+        for file in sorted(files):
+            # Create the link pointing to our /files mount
+            file_url = f"/files/{prefix}{file}"
+            html += f"<li>&nbsp;&nbsp;&nbsp;📄 <a href='{file_url}'>{file}</a></li>"
+
+    html += "</ul></body></html>"
+    return HTMLResponse(content=html)
+
+# Build the app with the /files mount added
+app = Starlette(
+    routes=[
+        Route("/", serve_ui),
+        Mount("/sse", mcp.sse_app()),
+        # This is the 'Weld' that connects the tunnel to your actual storage
+        Mount("/files", app=StaticFiles(directory=ROOT_DIR), name="static"),
+    ]
+)
+
+if __name__ == "__main__":
+    print(f"🚀 Synapse Bridge starting at {ROOT_DIR}")
+    uvicorn.run(app, host="0.0.0.0", port=8080)
