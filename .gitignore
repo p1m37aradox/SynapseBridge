@@ -1,0 +1,10 @@
+.git/
+.DS_Store
+__pycache__/
+*.pyc
+venv/
+.env
+palace/
+logs/
+mcp_serverOLD.py
+index.html

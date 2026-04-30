@@ -38,6 +38,9 @@ async def serve_ui(request):
     
     # Walk through the shared zone and build links
     for root, dirs, files in os.walk(ROOT_DIR):
+        # 1. Filter out hidden directories (like .git, .palace, .trash)
+        dirs[:] = [d for d in dirs if not d.startswith('.')]
+        
         rel_path = os.path.relpath(root, ROOT_DIR)
         if rel_path == ".":
             display_path = "Root"
@@ -48,6 +51,10 @@ async def serve_ui(request):
             html += f"<li class='folder'>📂 {display_path}/</li>"
 
         for file in sorted(files):
+            # 2. Filter out hidden files, python cache, and the deprecated index.html
+            if file.startswith('.') or file.endswith('.pyc') or file == "index.html":
+                continue
+
             # Create the link pointing to our /files mount
             file_url = f"/files/{prefix}{file}"
             html += f"<li>&nbsp;&nbsp;&nbsp;📄 <a href='{file_url}'>{file}</a></li>"
@@ -60,7 +67,6 @@ app = Starlette(
     routes=[
         Route("/", serve_ui),
         Mount("/sse", mcp.sse_app()),
-        # This is the 'Weld' that connects the tunnel to your actual storage
         Mount("/files", app=StaticFiles(directory=ROOT_DIR), name="static"),
     ]
 )
