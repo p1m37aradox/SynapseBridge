@@ -1,0 +1,10 @@
+wing: bridge
+rooms:
+- name: synapse_v2.6.1_deploy
+  description: Files from synapse_v2.6.1_deploy/
+  keywords:
+  - synapse_v2.6.1_deploy
+  - synapse_v2.6.1_deploy
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []
