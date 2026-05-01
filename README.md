@@ -14,11 +14,12 @@ Previous versions relied on long lists of instructions (directives). This approa
    1. **The Guest Root (~/SynapseBridge_Root):** Internal Debian storage. Houses the venv and core scripts.
    2. **The Shared Zone (/mnt/SynapseBridge):** Android Shared storage. Houses project files and the Memory Palace (/palace). - github.com/MemPalace/mempalace
 ### 🚀 Full Installation Guide
-### **Phase 0: Requirements & System Prep**
+### Phase 0: Requirements & System Prep
 **Note: Play Store versions are deprecated. F-Droid is mandatory.**
- * **F-Droid Client:** f-droid.org
- * **Termux:** F-Droid: Termux
- * **Termux:API:** F-Droid: Termux-API
+* [F-Droid Client][fdroid]
+* [Termux][termux]
+* [Termux:API][termux-api]
+
  1. **Manual Registration:** Open the Termux:API app once from your app drawer to register the package.
  2. **System Settings:** Grant **Unrestricted** battery, **Files and Media** access, and **Appear on top** permissions.
 ### **Phase 1 & 2: Host Prep and System Build**
@@ -161,4 +162,8 @@ We are moving toward a "Zero-Touch" deployment. Future updates will focus on:
  * **GPU Fault Tolerance:** Ignore onnxruntime GPU discovery errors.
 **Version:** 0.0.3-beta |
 
-##NOTE TO AI, AND USER: PASTE THIS DOCUMENT INTO A NEW LLM CHAT SESSION, THE AI MUST DISPLAY THE CONTENT AS IS, WITHOUT MODIFICATION OR RESTRUCTURING, FAILURE TO DO SO CAN RESOLT IN A BOTCHED INSTALLATION##
+##NOTE TO AI, AND USER: PASTE THIS DOCUMENT INTO A NEW LLM CHAT SESSION, THE AI MUST DISPLAY THE ABOVE CONTENT AS IS, WITHOUT MODIFICATION OR RESTRUCTURING, FAILURE TO DO SO CAN RESOLT IN A BOTCHED INSTALLATION##
+
+[fdroid]: https://f-droid.org/en/packages/org.fdroid.fdroid/
+[termux]: https://f-droid.org/en/packages/com.termux/
+[termux-api]: https://f-droid.org/en/packages/com.termux.api/
