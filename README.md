@@ -113,7 +113,7 @@ ssh -p 443 -R0:localhost:8080 a.pinggy.io
 
 ```
 (type yes when asked and press enter or input a password)
-*this is a temporary operation within the oriject, you can choose any tunnel service or webhost you want, we just used this because it worked when cloudflare, localtunnel and others failed to handle our MCP scripts.
+*this is a temporary operation within the project, you can choose any tunnel service or webhost you want, we just used this because it worked when cloudflare, localtunnel and others failed to handle our MCP scripts.
 
 **Terminal 4: Debian_CLI**
 ```bash
