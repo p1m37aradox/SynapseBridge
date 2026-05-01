@@ -45,8 +45,9 @@ source ~/.bashrc
 
 ```
 ### 🔵 Step 2: Guest Environment Setup (Debian)
-Type synapse to enter your Debian environment, then run this block to install the heavy-lifting tools like **Rust** and the **MCP Inspector**.
+Enter Debian environment, then run this block to install the heavy-lifting tools like **Rust** and the **MCP Inspector**.
 ```bash
+synapse
 # Update Debian and install build tools
 apt update && apt install -y build-essential curl git python3-full python3-venv nodejs npm
 
