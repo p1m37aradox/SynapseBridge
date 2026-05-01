@@ -23,7 +23,7 @@ Previous versions relied on long lists of instructions (directives). This approa
 *Launch Termux from your app drawer and run the following in Terminal 1.*
 
 ### 🟢 Step 1: Host Preparation (Termux)
-Run this block first to prepare the Android environment, install the tunnel, and establish the **Weld** (shared directory).
+Run these blocks first to prepare the Android environment, install the tunnel, and establish the (shared directory).
 ```bash
 # Update and install core Termux utilities
 pkg update && pkg upgrade -y
@@ -31,15 +31,20 @@ pkg install termux-api proot-distro tmux python openssh wget curl git nodejs pro
 termux-setup-storage
 termux-wake-lock
 
+```
+
+```bash
+# Install Pinggy, Build Dir Structures, Install Debian.
 # Install Pinggy (The Gateway)
 curl -s https://pinggy.io/install.sh | sh
 
-# Clone the distribution to the Shared Zone
+# Clone the distribution to the Shared Zone.
 mkdir -p ~/storage/shared/SynapseBridge
 git clone https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
 
-# Install Debian and establish the Weld alias
+# Install Debian and establish the synapse alias and mount shared dir to environment.
 proot-distro install debian
+
 echo "alias synapse='proot-distro login debian --bind /storage/emulated/0/SynapseBridge:/mnt/SynapseBridge'" >> ~/.bashrc
 source ~/.bashrc
 
