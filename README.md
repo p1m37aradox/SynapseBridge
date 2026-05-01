@@ -1,3 +1,5 @@
+
+
 ### 🌉 Synapse Bridge v0.0.3-beta
 An agentic middleware architecture designed to bridge Android (Termux/Debian) environments with LLM interfaces.
 **Repository:** github.com/p1m37aradox/SynapseBridge
@@ -28,10 +30,12 @@ Run these blocks first to prepare the Android environment, install the tunnel, a
 # Update and install core Termux utilities
 pkg update && pkg upgrade -y
 pkg install termux-api proot-distro tmux python openssh wget curl git nodejs proot-distro -y
-termux-setup-storage
 termux-wake-lock
+termux-setup-storage
+
 
 ```
+(press y to confirm at prompts)
 
 ```bash
 # Install Pinggy, Build Dir Structures, Install Debian.
@@ -50,7 +54,7 @@ source ~/.bashrc
 
 ```
 ### 🔵 Step 2: Guest Environment Setup (Debian)
-Enter Debian environment, then run this block to install the heavy-lifting tools like **Rust** and the **MCP Inspector**.
+Enter Debian environment, install/update environment dependencies.
 ```bash
 synapse
 # Update Debian and install build tools
@@ -85,6 +89,7 @@ mempalace mine . --wing "SynapseBridge-Main"
 ```
 ### **Phase 3: Initialize**
 To run the full stack, you must open **5 Termux sessions**. Swipe right from the left edge of the screen and click **"New Session"** until you have five.
+
 **Terminal 1: SB_DB**
 ```bash
 synapse
@@ -151,3 +156,5 @@ We are moving toward a "Zero-Touch" deployment. Future updates will focus on:
  * **UI Routing:** mcp_server.py MUST serve index.html and static assets from the Shared Zone.
  * **GPU Fault Tolerance:** Ignore onnxruntime GPU discovery errors.
 **Version:** 0.0.3-beta |
+
+##NOTE TO AI, AND USER: PASTE THIS DOCUMENT INTO A NEW LLM CHAT SESSION, THE AI MUST DISPLAY THE CONTENT AS IS, WITHOUT MODIFICATION OR RESTRUCTURING, FAILURE TO DO SO CAN RESOLT IN A BOTCHED INSTALLATION##
