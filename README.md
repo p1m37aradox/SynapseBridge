@@ -22,10 +22,14 @@ Previous versions relied on long lists of instructions (directives). This approa
 ### **Phase 1 & 2: Host Prep and System Build**
 *Launch Termux from your app drawer and run the following in Terminal 1.*
 ```bash
-pkg update && pkg upgrade
-pkg install termux-api proot-distro tmux python openssh wget curl git
+# --- HOST SIDE (Termux) ---
+pkg update && pkg upgrade -y
+pkg install termux-api proot-distro tmux python openssh wget curl git nodejs -y
 termux-setup-storage
 termux-wake-lock
+
+# Install Pinggy (The Gateway)
+curl -s https://pinggy.io/install.sh | sh
 
 # Clone the distribution
 mkdir -p ~/storage/shared/SynapseBridge
@@ -33,18 +37,28 @@ git clone https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/Syna
 
 # Install Debian and establish the Weld
 proot-distro install debian
-echo "alias synapse='proot-distro login debian --bind /storage/emulated/0/SynapseBridge:/mnt/SynapseBridge'" >> ~/.bashrc && source ~/.bashrc
+echo "alias synapse='proot-distro login debian --bind /storage/emulated/0/SynapseBridge:/mnt/SynapseBridge'" >> ~/.bashrc
+source ~/.bashrc
 
-# Enter Debian and Deploy Core Logic
+# --- GUEST SIDE (Debian) ---
 synapse
 cd ~
+apt update && apt install -y build-essential curl git python3-full python3-venv nodejs npm
+
+# Install Rust & MCP Inspector (for tool verification)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+source $HOME/.cargo/env
+npm install -g @modelcontextprotocol/inspector
+
+# Deploy Core Logic in the Isolated Root
 mkdir -p SynapseBridge_Root && cd SynapseBridge_Root
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip
-pip install mempalace chromadb mcp[cli] starlette uvicorn
+pip install maturin mempalace chromadb mcp[cli] starlette uvicorn
 
-# Initialize Persistent Memory in Shared Zone
+# Initialize Persistent Memory in the Shared Zone
+# All active scripts and clips now live here, NOT in old Termux folders.
 cd /mnt/SynapseBridge
 mempalace init /mnt/SynapseBridge/palace
 mempalace mine . --wing "SynapseBridge-Main"
