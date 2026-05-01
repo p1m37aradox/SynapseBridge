@@ -27,7 +27,7 @@ Run this block first to prepare the Android environment, install the tunnel, and
 ```bash
 # Update and install core Termux utilities
 pkg update && pkg upgrade -y
-pkg install termux-api proot-distro tmux python openssh wget curl git nodejs -y
+pkg install termux-api proot-distro tmux python openssh wget curl git nodejs proot-distro -y
 termux-setup-storage
 termux-wake-lock
 
