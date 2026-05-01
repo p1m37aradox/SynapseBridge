@@ -21,8 +21,11 @@ Previous versions relied on long lists of instructions (directives). This approa
  2. **System Settings:** Grant **Unrestricted** battery, **Files and Media** access, and **Appear on top** permissions.
 ### **Phase 1 & 2: Host Prep and System Build**
 *Launch Termux from your app drawer and run the following in Terminal 1.*
+
+### 🟢 Step 1: Host Preparation (Termux)
+Run this block first to prepare the Android environment, install the tunnel, and establish the **Weld** (shared directory).
 ```bash
-# --- HOST SIDE (Termux) ---
+# Update and install core Termux utilities
 pkg update && pkg upgrade -y
 pkg install termux-api proot-distro tmux python openssh wget curl git nodejs -y
 termux-setup-storage
@@ -31,34 +34,44 @@ termux-wake-lock
 # Install Pinggy (The Gateway)
 curl -s https://pinggy.io/install.sh | sh
 
-# Clone the distribution
+# Clone the distribution to the Shared Zone
 mkdir -p ~/storage/shared/SynapseBridge
 git clone https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
 
-# Install Debian and establish the Weld
+# Install Debian and establish the Weld alias
 proot-distro install debian
 echo "alias synapse='proot-distro login debian --bind /storage/emulated/0/SynapseBridge:/mnt/SynapseBridge'" >> ~/.bashrc
 source ~/.bashrc
 
-# --- GUEST SIDE (Debian) ---
-synapse
-cd ~
+```
+### 🔵 Step 2: Guest Environment Setup (Debian)
+Type synapse to enter your Debian environment, then run this block to install the heavy-lifting tools like **Rust** and the **MCP Inspector**.
+```bash
+# Update Debian and install build tools
 apt update && apt install -y build-essential curl git python3-full python3-venv nodejs npm
 
-# Install Rust & MCP Inspector (for tool verification)
+# Install Rust & Cargo
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source $HOME/.cargo/env
+
+# Install MCP Inspector globally
 npm install -g @modelcontextprotocol/inspector
 
-# Deploy Core Logic in the Isolated Root
+```
+### 🟡 Step 3: Deploy Core Logic & Memory
+Finally, run this block to set up your Python virtual environment and initialize the **MemPalace** database in the shared zone.
+```bash
+# Setup the isolated Python environment
+cd ~
 mkdir -p SynapseBridge_Root && cd SynapseBridge_Root
 python3 -m venv venv
 source venv/bin/activate
+
+# Install dependencies
 pip install --upgrade pip
 pip install maturin mempalace chromadb mcp[cli] starlette uvicorn
 
 # Initialize Persistent Memory in the Shared Zone
-# All active scripts and clips now live here, NOT in old Termux folders.
 cd /mnt/SynapseBridge
 mempalace init /mnt/SynapseBridge/palace
 mempalace mine . --wing "SynapseBridge-Main"
