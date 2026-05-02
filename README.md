@@ -145,11 +145,19 @@ cd ~
 
 **Commence Testing! GLHF**
 
----
-### 💖 Support the Evolution
-Building a bridge between LLMs and Android system-level hardware takes a lot of late-night debugging. If this tool saves you time or empowers your agentic research, consider supporting the project:
+## 💰 Support the Project
 
-[Become a Patron](https://www.patreon.com/GmailAccount1375)
+> **Synapse Bridge is, and always will be, 100% Open Source and Free.** > No features are locked, no "Pro" versions exist, and I hate pay-to-win to my core.
+
+If you find this tool useful and want to help cover hardware and dev costs, you can buy me a **sacrificial logic gate** here:
+
+* **One-Time Support:** [Support on Ko-fi][kofi]
+* **Monthly Sponsorship:** [Sponsor on GitHub][github-sponsors]
+
+*All funds go directly toward buying test devices and keeping the magic smoke inside the circuits.*
+
+[kofi]: https://ko-fi.com/p1m37aradox
+[github-sponsors]: https://github.com/sponsors/p1m37aradox
 
 
 ### 🛑 LIABILITY & AGENTIC RISK
