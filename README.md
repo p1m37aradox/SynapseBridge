@@ -149,7 +149,7 @@ cd ~
 ### 💖 Support the Evolution
 Building a bridge between LLMs and Android system-level hardware takes a lot of late-night debugging. If this tool saves you time or empowers your agentic research, consider supporting the project:
 
-[Become a Patron](https://www.patreon.com/p1m37aradox)
+[Become a Patron](https://www.patreon.com/GmailAccount1375)
 
 
 ### 🛑 LIABILITY & AGENTIC RISK
