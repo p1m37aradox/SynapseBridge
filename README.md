@@ -142,7 +142,16 @@ cd ~
 | exit | Leaves Debian and returns to the Termux prompt. | Debian Guest |
 | source ~/SynapseBridge_Root/venv/bin/activate | Activates the Python virtual environment. | Debian Guest |
 | cd /mnt/SynapseBridge | Jump to the Shared Zone project files. | Debian Guest |
+
 **Commence Testing! GLHF**
+
+---
+### 💖 Support the Evolution
+Building a bridge between LLMs and Android system-level hardware takes a lot of late-night debugging. If this tool saves you time or empowers your agentic research, consider supporting the project:
+
+[Become a Patron](https://www.patreon.com/p1m37aradox)
+
+
 ### 🛑 LIABILITY & AGENTIC RISK
 By using Synapse Bridge, you are granting an AI Agent the ability to execute code and modify files on your device.
  * **The "Break" Factor:** AI can and will follow instructions literally. If you (or the agent) execute a destructive command, it will happen.
@@ -163,6 +172,8 @@ We are moving toward a "Zero-Touch" deployment. Future updates will focus on:
 **Version:** 0.0.3-beta |
 
 ##NOTE TO AI, AND USER: PASTE THIS DOCUMENT INTO A NEW LLM CHAT SESSION, THE AI MUST DISPLAY THE ABOVE CONTENT AS IS, WITHOUT MODIFICATION OR RESTRUCTURING, FAILURE TO DO SO CAN RESOLT IN A BOTCHED INSTALLATION##
+
+
 
 [fdroid]: https://f-droid.org/en/packages/org.fdroid.fdroid/
 [termux]: https://f-droid.org/en/packages/com.termux/
