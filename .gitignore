@@ -1,10 +1,7 @@
-.git/
-.DS_Store
 __pycache__/
-*.pyc
+*.py[cod]
+*.class
 venv/
 .env
-palace/
-logs/
-mcp_serverOLD.py
-index.html
+.DS_Store
+palace/db/
