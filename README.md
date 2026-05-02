@@ -72,19 +72,33 @@ npm install -g @modelcontextprotocol/inspector
 ### 🟡 Step 3: Deploy Core Logic & Memory
 Finally, run this block to set up your Python virtual environment and initialize the **MemPalace** database in the shared zone.
 ```bash
-# Setup the isolated Python environment
+# 1. Setup the isolated Python environment
 cd ~
 mkdir -p SynapseBridge_Root && cd SynapseBridge_Root
 python3 -m venv venv
 source venv/bin/activate
 
-# Install dependencies
+# 2. Install dependencies
 pip install --upgrade pip
 pip install maturin mempalace chromadb mcp[cli] starlette uvicorn
 
-# Initialize Persistent Memory in the Shared Zone
+# 3. Weld the Global Configuration
+# This preemptively points MemPalace to the Shared Zone portal 
+# to prevent "Ghost" database creation in the Guest Root.
+mkdir -p ~/.mempalace
+cat > ~/.mempalace/config.json <<EOF
+{
+  "palace_path": "/mnt/SynapseBridge/palace",
+  "collection_name": "mempalace_drawers",
+  "topic_wings": ["technical", "memory", "SynapseBridge-Main"]
+}
+EOF
+
+# 4. Initialize and Populate the Memory Palace
+# Since the config is already "welded," the tool will automatically 
+# build the vault and mine vectors directly into the Shared Zone.
 cd /mnt/SynapseBridge
-mempalace init /mnt/SynapseBridge/palace
+mempalace init . --yes
 mempalace mine . --wing "SynapseBridge-Main"
 
 ```
