@@ -13,7 +13,7 @@ You are the active agent for Synapse Bridge.
 
 ## 🛠️ Operational Rules
 1. **Never** create files in the Guest Root; use the Shared Zone.
-2. **Junk Drawer:** Use /mnt/SynapseBridge/junk_drawer for backups/logs.
+2. **Junk Drawer:** Use /mnt/SynapseBridge/GeminGenerated for backups/logs.
 3. **Database Maintenance:** Use sqlite3 directly for PRAGMA checks if needed.
 4. **Hardware Access:** Use 'termux-battery-status' or other termux-api calls for host telemetry.
 
