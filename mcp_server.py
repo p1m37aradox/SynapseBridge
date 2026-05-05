@@ -1,10 +1,12 @@
 from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
-from starlette.responses import HTMLResponse
+from starlette.responses import HTMLResponse, JSONResponse
 from starlette.routing import Route, Mount
 from starlette.staticfiles import StaticFiles
 import os
 import uvicorn
+import requests
+
 
 # Set the path explicitly
 ROOT_DIR = "/mnt/SynapseBridge"
@@ -51,21 +53,58 @@ async def serve_ui(request):
             html += f"<li class='folder'>📂 {display_path}/</li>"
 
         for file in sorted(files):
-            # 2. Filter out hidden files, python cache, and the deprecated index.html
             if file.startswith('.') or file.endswith('.pyc') or file == "index.html":
                 continue
 
-            # Create the link pointing to our /files mount
             file_url = f"/files/{prefix}{file}"
             html += f"<li>&nbsp;&nbsp;&nbsp;📄 <a href='{file_url}'>{file}</a></li>"
 
     html += "</ul></body></html>"
     return HTMLResponse(content=html)
 
+# --- MACHINE & MEMORY ENDPOINTS ---
+
+async def health(request):
+    return JSONResponse({"status": "ok"})
+
+async def tools(request):
+    return JSONResponse({
+        "tools": [
+            {"name": "check_mount", "description": "Verify access to shared root"},
+            {"name": "query_memory", "description": "Semantic search through MemPalace"}
+        ]
+    })
+
+async def query_memory(request):
+    user_query = request.query_params.get("q", "")
+    if not user_query:
+        return JSONResponse({"error": "No query provided"}, status_code=400)
+
+    # Payload for the ChromaDB instance running in Terminal 1
+    payload = {
+        "where": {},
+        "n_results": 3,
+        "query_texts": [user_query]
+    }
+    
+    try:
+        # Note: 'SynapseBridge-Main' is the wing we initialized in Phase 2
+        response = requests.post(
+    "http://localhost:8000/api/v2/collections/mempalace_closets/query",
+    json=payload
+)
+
+        return JSONResponse(response.json())
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=500)
+
 # Build the app with the /files mount added
 app = Starlette(
     routes=[
         Route("/", serve_ui),
+        Route("/health", health),
+        Route("/tools", tools),
+        Route("/query", query_memory),
         Mount("/sse", mcp.sse_app()),
         Mount("/files", app=StaticFiles(directory=ROOT_DIR), name="static"),
     ]
@@ -74,3 +113,4 @@ app = Starlette(
 if __name__ == "__main__":
     print(f"🚀 Synapse Bridge starting at {ROOT_DIR}")
     uvicorn.run(app, host="0.0.0.0", port=8080)
+

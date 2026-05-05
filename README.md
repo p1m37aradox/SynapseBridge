@@ -5,6 +5,7 @@ An agentic middleware architecture designed to bridge Android (Termux/Debian) en
 **Repository:** github.com/p1m37aradox/SynapseBridge
 > ### ⚠️ CAUTION: PREREQUISITE KNOWLEDGE
 > This is an **Expert-Level** deployment. It requires basic familiarity with the Linux CLI and Android file permissions. **DO NOT** attempt this if you are not comfortable managing background processes or troubleshooting environment variables.
+> 
 > ### 🔍 WHY SYNAPSE BRIDGE?
 > Traditional LLM interactions are trapped in a "Chat Box." Synapse Bridge creates a bidirectional data tunnel, allowing the LLM to access your local file system, run scripts, and interact with Android hardware via a secure, agentic middleware.
 > 
@@ -16,17 +17,15 @@ Previous versions relied on long lists of instructions (directives). This approa
 ### 🚀 Full Installation Guide
 ### Phase 0: Requirements & System Prep
 **Note: Play Store versions are deprecated. F-Droid is mandatory.**
-* [F-Droid Client][fdroid]
-* [Termux][termux]
-* [Termux:API][termux-api]
-
+ * F-Droid Client
+ * Termux
+ * Termux:API
  1. **Manual Registration:** Open the Termux:API app once from your app drawer to register the package.
  2. **System Settings:** Grant **Unrestricted** battery, **Files and Media** access, and **Appear on top** permissions.
 ### **Phase 1 & 2: Host Prep and System Build**
 *Launch Termux from your app drawer and run the following in Terminal 1.*
-
 ### 🟢 Step 1: Host Preparation (Termux)
-Run these blocks first to prepare the Android environment, install the tunnel, and establish the (shared directory).
+Run these blocks first to prepare the Android environment, install the tunnel, and establish the shared directory.
 ```bash
 # Update and install core Termux utilities
 pkg update && pkg upgrade -y
@@ -34,12 +33,9 @@ pkg install termux-api proot-distro tmux python openssh wget curl git nodejs pro
 termux-wake-lock
 termux-setup-storage
 
-
 ```
 (press y to confirm at prompts)
-
 ```bash
-# Install Pinggy, Build Dir Structures, Install Debian.
 # Install Pinggy (The Gateway)
 curl -s https://pinggy.io/install.sh | sh
 
@@ -58,8 +54,8 @@ source ~/.bashrc
 Enter Debian environment, install/update environment dependencies.
 ```bash
 synapse
-# Update Debian and install build tools
-apt update && apt install -y build-essential curl git python3-full python3-venv nodejs npm
+# Update Debian and install build tools, SQLite3, and Nano
+apt update && apt install -y build-essential curl git python3-full python3-venv nodejs npm sqlite3 nano
 
 # Install Rust & Cargo
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -70,7 +66,7 @@ npm install -g @modelcontextprotocol/inspector
 
 ```
 ### 🟡 Step 3: Deploy Core Logic & Memory
-Finally, run this block to set up your Python virtual environment and initialize the **MemPalace** database in the shared zone.
+Finally, run this block to set up your environment and initialize the Memory Palace.
 ```bash
 # 1. Setup the isolated Python environment
 cd ~
@@ -78,13 +74,16 @@ mkdir -p SynapseBridge_Root && cd SynapseBridge_Root
 python3 -m venv venv
 source venv/bin/activate
 
-# 2. Install dependencies
+# 2. Install dependencies with verified compatibility
 pip install --upgrade pip
-pip install maturin mempalace chromadb mcp[cli] starlette uvicorn
+pip install maturin mempalace "chromadb>=0.5.0" "mcp[cli]" starlette uvicorn
 
-# 3. Weld the Global Configuration
-# This preemptively points MemPalace to the Shared Zone portal 
-# to prevent "Ghost" database creation in the Guest Root.
+# 3. Initialize MemPalace
+cd /mnt/SynapseBridge
+mempalace init . --yes
+
+# 4. THE WELD: Apply Shared Zone paths AFTER initialization
+# This forces the configuration to prioritize /mnt/ storage over Guest Root defaults.
 mkdir -p ~/.mempalace
 cat > ~/.mempalace/config.json <<EOF
 {
@@ -94,23 +93,21 @@ cat > ~/.mempalace/config.json <<EOF
 }
 EOF
 
-# 4. Initialize and Populate the Memory Palace
-# Since the config is already "welded," the tool will automatically 
-# build the vault and mine vectors directly into the Shared Zone.
-cd /mnt/SynapseBridge
-mempalace init . --yes
+# 5. Populate the Memory
 mempalace mine . --wing "SynapseBridge-Main"
 
 ```
 (At the MemPalace prompts: press enter to accept all rooms, then; N and enter, then; y and enter.)
+> **Note on Re-Initialization:** If you run mempalace init again at any point, you **must** re-run Step 4 to "re-weld" the paths.
+> 
 ### **Phase 3: Initialize**
-To run the full stack, you must open **5 Termux sessions**. Swipe right from the left edge of the screen and click **"New Session"** until you have five.
-
+To run the full stack, you must open **6 Termux sessions**. Swipe right from the left edge of the screen and click **"New Session"** until you have six.
 **Terminal 1: SB_DB**
 ```bash
 synapse
 source ~/SynapseBridge_Root/venv/bin/activate
-chroma run --path /mnt/SynapseBridge/palace/db --port 8000
+# Point to parent folder so Chroma finds the /db subfolder
+chroma run --path /mnt/SynapseBridge/palace --port 8000
 
 ```
 **Terminal 2: SB_Bridge**
@@ -123,21 +120,28 @@ python3 /mnt/SynapseBridge/mcp_server.py
 **Terminal 3: SB_Tunnel**
 ```bash
 synapse
-ssh -p 443 -R0:localhost:8080 a.pinggy.io
+# Tunnel port 8000 to match the Database port
+ssh -p 443 -R0:localhost:8000 a.pinggy.io
 
 ```
-(type yes when asked and press enter or input a password)
-*this is a temporary operation within the project, you can choose any tunnel service or webhost you want, we just used this because it worked when cloudflare, localtunnel and others failed to handle our MCP scripts.
+(type yes when asked and press enter)
+**Terminal 4: SB_Venv (Debian Logic)**
+```bash
+synapse
+source ~/SynapseBridge_Root/venv/bin/activate
+# Use this for active code execution and testing
 
-**Terminal 4: Debian_CLI**
+```
+**Terminal 5: Debian_CLI**
 ```bash
 synapse
 cd /mnt/SynapseBridge
+# File maintenance, nano editing, and sqlite3 diagnostics
 
 ```
-**Terminal 5: Termux_CLI**
+**Terminal 6: Termux_CLI**
 ```bash
-# Stay in Termux for Hardware/Host operations
+# Host-level operations (Hardware/Battery/API)
 cd ~
 
 ```
@@ -156,45 +160,27 @@ cd ~
 | exit | Leaves Debian and returns to the Termux prompt. | Debian Guest |
 | source ~/SynapseBridge_Root/venv/bin/activate | Activates the Python virtual environment. | Debian Guest |
 | cd /mnt/SynapseBridge | Jump to the Shared Zone project files. | Debian Guest |
-
 **Commence Testing! GLHF**
-
 ## 💰 Support the Project
-
-> **Synapse Bridge is, and always will be, 100% Open Source and Free.** > No features are locked, no "Pro" versions exist, and I hate pay-to-win to my core.
-
-If you find this tool useful and want to help cover hardware and dev costs, you can buy me a **sacrificial logic gate** here:
-
-* **One-Time Support:** [Support on Ko-fi][kofi]
-* **Monthly Sponsorship:** [Sponsor on GitHub][github-sponsors]
-
-*All funds go directly toward buying test devices and keeping the magic smoke inside the circuits.*
-
-[kofi]: https://ko-fi.com/p1m37aradox
-[github-sponsors]: https://github.com/sponsors/p1m37aradox
-
-
+> **Synapse Bridge is, and always will be, 100% Open Source and Free.**
+> 
+ * **One-Time Support:** Support on Ko-fi
+ * **Monthly Sponsorship:** Sponsor on GitHub
 ### 🛑 LIABILITY & AGENTIC RISK
 By using Synapse Bridge, you are granting an AI Agent the ability to execute code and modify files on your device.
- * **The "Break" Factor:** AI can and will follow instructions literally. If you (or the agent) execute a destructive command, it will happen.
- * **No Safety Net:** We are **not responsible** for corrupted data, "bricked" environments, or system instability. You operate this bridge at your own risk. **Always keep backups.**
+ * **The "Break" Factor:** AI can and will follow instructions literally.
+ * **No Safety Net:** We are **not responsible** for corrupted data. **Always keep backups.**
 ### 🗺️ Roadmap: The Future of Synapse
 We are moving toward a "Zero-Touch" deployment. Future updates will focus on:
- * **Auto-Terminal Execution:** A single command to trigger the orchestration of all 5 terminals via am startservice and automation hooks.
- * **Sophisticated Sandbox:** Implementing a virtualized isolation layer to prevent destructive commands from affecting the host system.
- * **Live Output & UI Enchantments:** A real-time display showing active code execution and interaction, alongside a refined dashboard for system monitoring.
- * **Session Recycling:** Logic to detect stale PID files and automatically "clean and restart" frozen services.
- * **Smooth Return:** Persistent state management for instant resumption of bridged sessions.
+ * **Gemini CLI Integration:** Operational but remains secondary.
+ * **MemPalace Optimization:** Focused on local-first, subscription-free memory. No digital rent.
+ * **Auto-Terminal Execution:** Orchestrating all 6 terminals via automation hooks.
+ * **Session Recycling:** Logic to clean stale PID files and restart services.
 ### ⚠️ CRITICAL: Directory Naming & Pathing
- * **Folder Name:** Use SynapseBridge.
- * **The Weld Path:** Standardizing on /storage/emulated/0/SynapseBridge prevents "phantom" directory creation.
- * **Protocol Standard:** Using **Model Context Protocol (MCP)** for SSE-based tool transport.
- * **UI Routing:** mcp_server.py MUST serve index.html and static assets from the Shared Zone.
+ * **The Weld Path:** Standardizing on /storage/emulated/0/SynapseBridge.
  * **GPU Fault Tolerance:** Ignore onnxruntime GPU discovery errors.
 **Version:** 0.0.3-beta |
-
-##NOTE TO AI, AND USER: PASTE THIS DOCUMENT INTO A NEW LLM CHAT SESSION, THE AI MUST DISPLAY THE ABOVE CONTENT AS IS, WITHOUT MODIFICATION OR RESTRUCTURING, FAILURE TO DO SO CAN RESOLT IN A BOTCHED INSTALLATION##
-
+##NOTE TO AI, AND USER: PASTE THIS DOCUMENT INTO A NEW LLM CHAT SESSION, THE AI MUST DISPLAY THE ABOVE CONTENT AS IS, WITHOUT MODIFICATION OR RESTRUCTURING, FAILURE TO DO SO CAN RESULT IN A BOTCHED INSTALLATION##
 
 
 [fdroid]: https://f-droid.org/en/packages/org.fdroid.fdroid/

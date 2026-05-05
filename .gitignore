@@ -5,3 +5,10 @@ venv/
 .env
 .DS_Store
 palace/db/
+
+# Synapse Bridge Personal Exclusions
+junk_drawer/
+palace/
+palace/db/
+*.sqlite3
+*.log
