@@ -1,6 +1,6 @@
 PASTE AS IS INTO A NEW LLM PROMPT
 
-### 🌉 Synapse Bridge v0.0.3.1b-GeminiCLI
+### 🌉 Synapse Bridge v0.0.3-beta
 An agentic middleware architecture designed to bridge Android (Termux/Debian) environments with LLM interfaces.
 
 **Repository:** github.com/p1m37aradox/SynapseBridge
@@ -95,14 +95,14 @@ EOF
 
 # 5. THE CONTEXT: Feed Gemini the "Map of the House"
 # This ensures the Agent knows where to write and how to navigate.
-mkdir -p /mnt/SynapseBridge/GeminiGenerated
+mkdir -p /mnt/SynapseBridge/junk_drawer
 cat > /mnt/SynapseBridge/GEMINI.md <<EOF
 # 🌉 Synapse Bridge Context
 - Shared Zone: /mnt/SynapseBridge
-- Agent Storage: /mnt/SynapseBridge/GeminiGenerated
+- Agent Storage: /mnt/SynapseBridge/junk_drawer
 - Ports: 8000 (Local DB), 443 (Pinggy Tunnel)
 - Execution: You are running in Termux Host with access to Debian via 'synapse'
-- Rule: Always write logs/files to the GeminiGenerated/ directory.
+- Rule: Always write logs/files to the junk_drawer/ directory.
 EOF
 
 # 6. Populate the Memory
@@ -162,7 +162,7 @@ export GOOGLE_API_KEY="YOUR_KEY_HERE"
 gemini "Perform a Global Weld Verification:
 1. Read /sdcard/SynapseBridge/GEMINI.md to confirm context.
 2. Check battery via 'termux-battery-status'.
-3. Log 'HOST_ACTIVATION_SUCCESS' to /sdcard/SynapseBridge/GeminiGenerated/GRAND_DECLARATION.txt."
+3. Log 'HOST_ACTIVATION_SUCCESS' to /sdcard/SynapseBridge/junk_drawer/GRAND_DECLARATION.txt."
 
 ```
 **Important: Once initialized, share the status of Terminal 1 and 2 and the Pinggy URL from Terminal 3 with the LLM to establish the bridge.**
@@ -200,3 +200,7 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
 [termux]: https://f-droid.org/en/packages/com.termux/
 [termux-api]: https://f-droid.org/en/packages/com.termux.api/
 
+
+## 💰 Support the Project
+* **One-Time Support:** [Support on Ko-fi](https://ko-fi.com/p1m37aradox)
+* **Monthly Sponsorship:** [Sponsor on GitHub](https://github.com/sponsors/p1m37aradox)
