@@ -1,19 +1,20 @@
 PASTE AS IS INTO A NEW LLM PROMPT
 
-### 🌉 Synapse Bridge v0.0.4b
+### 🌉 Synapse Bridge v0.0.4.1b-GeminiCLI
 An agentic middleware architecture designed to bridge Android (Termux/Debian) environments with LLM interfaces.
+
 **Repository:** github.com/p1m37aradox/SynapseBridge
 > ### ⚠️ CAUTION: PREREQUISITE KNOWLEDGE
 > This is an **Expert-Level** deployment. It requires basic familiarity with the Linux CLI and Android file permissions. **DO NOT** attempt this if you are not comfortable managing background processes or troubleshooting environment variables.
+> 
 > ### 🔍 WHY SYNAPSE BRIDGE?
 > Traditional LLM interactions are trapped in a "Chat Box." Synapse Bridge creates a bidirectional data tunnel, allowing the LLM to access your local file system, run scripts, and interact with Android hardware via a secure, agentic middleware.
 > 
-### 🏗️ THE MONOLITHIC SHIFT: v0.0.4b
-Previous versions relied on long lists of instructions and fragmented services. v0.0.4b introduces a unified Starlette + MCP server that embeds the Memory Palace directly into the middleware, eliminating the need for a separate ChromaDB process.
+### 🏗️ WHY WE STARTED FRESH: The Shift to MCP
+Previous versions relied on long lists of instructions (directives). This approach failed due to instruction fatigue and framework limitations.
  * **The Split-Root Mandate:** To bypass Android storage limitations and the "data/data" wall, we use two distinct directories:
    1. **The Guest Root (~/SynapseBridge_Root):** Internal Debian storage. Houses the venv and core scripts.
-   2. **The Shared Zone (/mnt/SynapseBridge):** Android Shared storage. Houses project files and the Memory Palace (/palace). [github.com/MemPalace/mempalace][mempalace]
-
+   2. **The Shared Zone (/mnt/SynapseBridge):** Android Shared storage. Houses project files and the Memory Palace (/palace). - github.com/MemPalace/mempalace
 ### 🚀 Full Installation Guide
 ### Phase 0: Requirements & System Prep
 **Note: Play Store versions are deprecated. F-Droid is mandatory.**
@@ -99,7 +100,21 @@ cp "$MEMPAL_DIR/mcp_server.py" "$MEMPAL_DIR/mcp_server.backup"
 cp /mnt/SynapseBridge/.mcp_server.py "$MEMPAL_DIR/mcp_server.py"
 
 ```
-### 🟡 Step 4: Populate the Memory
+### 🟡 Step 4: Feed Gemini the "Map of the House"
+This ensures the Agent knows where to write and how to navigate.
+```bash
+mkdir -p /mnt/SynapseBridge/GeminiGenerated
+cat > /mnt/SynapseBridge/GEMINI.md <<EOF
+# 🌉 Synapse Bridge Context
+- Shared Zone: /mnt/SynapseBridge
+- Agent Storage: /mnt/SynapseBridge/GeminiGenerated
+- Ports: 8080 (Unified MCP), 443 (Pinggy Tunnel)
+- Execution: You are running in Termux Host with access to Debian via 'synapse'
+- Rule: Always write logs/files to the GeminiGenerated/ directory.
+EOF
+
+```
+### 🟡 Step 5: Populate the Memory
 Mine the palace
 ```bash
 synapse
@@ -108,41 +123,68 @@ mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 
 ```
 ### **Phase 3: Initialize**
-To run the full stack, you must open **5 Termux sessions**. Swipe right from the left edge of the screen and click **"New Session"** until you have five.
-
-**Terminal 1: SB_MCP (The Core)**
+To run the full stack, you must open **7 Termux sessions**. Swipe right from the left edge of the screen and click **"New Session"** until you have seven.
+**Terminal 1: SB_DB**
 ```bash
 synapse
 source ~/SynapseBridge_Root/venv/bin/activate
-mempalace-mcp
+chroma run --path /mnt/SynapseBridge/palace --port 8000
 
 ```
-**Terminal 2: Pinggy (The Tunnel)**
+**Terminal 2: SB_Bridge**
 ```bash
 synapse
-ssh -p 443 -R0:localhost:8080 qr@a.pinggy.io
+source ~/SynapseBridge_Root/venv/bin/activate
+python3 /mnt/SynapseBridge/mcp_server.py
 
 ```
-**Terminal 3: SB_Venv (Debian Logic)**
+**Terminal 3: SB_Tunnel**
+```bash
+synapse
+ssh -p 443 -R0:localhost:8000 a.pinggy.io
+
+```
+**Terminal 4: SB_Venv (Debian Logic)**
 ```bash
 synapse
 source ~/SynapseBridge_Root/venv/bin/activate
 # Active code execution and testing
 
 ```
-**Terminal 4: Debian_CLI**
+**Terminal 5: Debian_CLI**
 ```bash
 synapse
 cd /mnt/SynapseBridge
 
 ```
-**Terminal 5: Termux_CLI**
+**Terminal 6: Termux_CLI**
 ```bash
 # Host-level operations (Hardware/Battery/API)
 cd ~
 
 ```
-**Important: Once initialized, share the status of Terminal 1 and the Pinggy URL from Terminal 2 with the LLM to establish the bridge.**
+**Terminal 7: Gemini_CLI**
+```bash
+# 1. Install the Agent on the Host (Termux)
+npm install -g @google/generative-ai-cli
+
+# 2. Set your API Key
+export GOOGLE_API_KEY="YOUR_KEY_HERE"
+
+# 3. The Grand Activation Test
+gemini "Perform a Global Weld Verification:
+1. Read /sdcard/SynapseBridge/GEMINI.md to confirm context.
+2. Check battery via 'termux-battery-status'.
+3. Log 'HOST_ACTIVATION_SUCCESS' to /sdcard/SynapseBridge/GeminiGenerated/GRAND_DECLARATION.txt."
+
+```
+After initial install is complete, to restore environment:
+* re open 7 terminals
+* execute the first 6 bash commands in the terminals in order with the bash commands.
+* On the 7th, type gemini to enter the CLI.
+  (This process will be automated in future builds.)
+
+**Important: Once initialized, share the status of Terminal 1 and 2 and the Pinggy URL from Terminal 3 with the LLM to establish the bridge.**
 
 ### 🛠️ Quick Reference & Navigation
 #### **Termux Interface Navigation**
@@ -154,23 +196,22 @@ cd ~
 | Command | Action | Location |
 |---|---|---|
 | synapse | Enters the Debian environment with Shared storage mapped. | Termux Host |
-| mempalace-mcp | Launches the unified UI, MCP tools, and Memory Engine. | Debian (venv) |
-| **Commence Testing! GLHF** |  |  |
+| exit | Leaves Debian and returns to the Termux prompt. | Debian Guest |
+**Commence Testing! GLHF**
 
 ### 🛑 LIABILITY & AGENTIC RISK
 By using Synapse Bridge, you are granting an AI Agent the ability to execute code and modify files on your device.
  * **The "Break" Factor:** AI can and will follow instructions literally.
  * **No Safety Net:** We are **not responsible** for corrupted data. **Always keep backups.**
-
 ### 🗺️ Roadmap: The Future of Synapse
- * **Auto-Terminal Execution:** Orchestrating all sessions via automation hooks.
+ * **Auto-Terminal Execution:** Orchestrating all 7 terminals via automation hooks.
  * **Session Recycling:** Logic to clean stale PID files and restart services.
  * **Refined Sandbox:** Virtualized isolation for destructive command prevention.
-
+ * 
 ### ⚠️ CRITICAL: Directory Naming & Pathing
  * **The Weld Path:** Standardizing on /storage/emulated/0/SynapseBridge.
- * **Source File:** Ensure your custom script is named .mcp_server.py in the shared directory before Step 5.
-   **Version:** 0.0.4b |
+ * **GPU Fault Tolerance:** Ignore onnxruntime GPU discovery errors.
+**Version:** 0.0.4.1-beta |
 
 ## 💰 Support the Project
 * **One-Time Support:** [Support on Ko-fi](https://ko-fi.com/p1m37aradox)
@@ -181,4 +222,3 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
 [termux]: https://f-droid.org/en/packages/com.termux/
 [termux-api]: https://f-droid.org/en/packages/com.termux.api/
 [mempalace]:https://github.com/MemPalace/mempalace/
-
