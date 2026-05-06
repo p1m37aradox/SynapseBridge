@@ -1,6 +1,6 @@
 PASTE AS IS INTO A NEW LLM PROMPT
 
-### 🌉 Synapse Bridge v0.0.3.1b-GeminiCLI
+### 🌉 Synapse Bridge v0.0.4.1b-GeminiCLI
 An agentic middleware architecture designed to bridge Android (Termux/Debian) environments with LLM interfaces.
 
 **Repository:** github.com/p1m37aradox/SynapseBridge
@@ -83,7 +83,7 @@ pip install maturin mempalace "chromadb>=0.5.0" "mcp[cli]" starlette uvicorn
 cd /mnt/SynapseBridge
 mempalace init . --yes
 
-# 4. THE WELD: Apply Shared Zone paths AFTER initialization
+# 4. THE WELD CONFIG: Apply Shared Zone paths
 mkdir -p ~/.mempalace
 cat > ~/.mempalace/config.json <<EOF
 {
@@ -93,20 +93,33 @@ cat > ~/.mempalace/config.json <<EOF
 }
 EOF
 
-# 5. THE CONTEXT: Feed Gemini the "Map of the House"
-# This ensures the Agent knows where to write and how to navigate.
+# 5. MCP SERVER SWAP: Inject Synapse Bridge Logic
+# Backs up the original library file and replaces it with our custom entry point.
+export MEMPAL_DIR=$(python -c "import mempalace; print(mempalace.__path__[0])")
+cp "$MEMPAL_DIR/mcp_server.py" "$MEMPAL_DIR/mcp_server.backup"
+cp /mnt/SynapseBridge/.mcp_server.py "$MEMPAL_DIR/mcp_server.py"
+
+```
+### 🟡 Step 4: Feed Gemini the "Map of the House"
+This ensures the Agent knows where to write and how to navigate.
+```bash
 mkdir -p /mnt/SynapseBridge/GeminiGenerated
 cat > /mnt/SynapseBridge/GEMINI.md <<EOF
 # 🌉 Synapse Bridge Context
 - Shared Zone: /mnt/SynapseBridge
 - Agent Storage: /mnt/SynapseBridge/GeminiGenerated
-- Ports: 8000 (Local DB), 443 (Pinggy Tunnel)
+- Ports: 8080 (Unified MCP), 443 (Pinggy Tunnel)
 - Execution: You are running in Termux Host with access to Debian via 'synapse'
 - Rule: Always write logs/files to the GeminiGenerated/ directory.
 EOF
 
-# 6. Populate the Memory
-mempalace mine . --wing "SynapseBridge-Main"
+```
+### 🟡 Step 5: Populate the Memory
+Mine the palace
+```bash
+synapse
+source ~/SynapseBridge_Root/venv/bin/activate
+mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 
 ```
 ### **Phase 3: Initialize**
@@ -165,7 +178,14 @@ gemini "Perform a Global Weld Verification:
 3. Log 'HOST_ACTIVATION_SUCCESS' to /sdcard/SynapseBridge/GeminiGenerated/GRAND_DECLARATION.txt."
 
 ```
+After initial install is complete, to restore environment:
+* re open 7 terminals
+* execute the first 6 bash commands in the terminals in order with the bash commands.
+* On the 7th, type gemini to enter the CLI.
+  (This process will be automated in future builds.)
+
 **Important: Once initialized, share the status of Terminal 1 and 2 and the Pinggy URL from Terminal 3 with the LLM to establish the bridge.**
+
 ### 🛠️ Quick Reference & Navigation
 #### **Termux Interface Navigation**
  * **Switch Sessions:** Swipe from the left edge of the screen to see the session drawer. Tap a session to switch.
@@ -178,9 +198,7 @@ gemini "Perform a Global Weld Verification:
 | synapse | Enters the Debian environment with Shared storage mapped. | Termux Host |
 | exit | Leaves Debian and returns to the Termux prompt. | Debian Guest |
 **Commence Testing! GLHF**
-## 💰 Support the Project
- * **One-Time Support:** Support on Ko-fi
- * **Monthly Sponsorship:** Sponsor on GitHub
+
 ### 🛑 LIABILITY & AGENTIC RISK
 By using Synapse Bridge, you are granting an AI Agent the ability to execute code and modify files on your device.
  * **The "Break" Factor:** AI can and will follow instructions literally.
@@ -189,14 +207,18 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
  * **Auto-Terminal Execution:** Orchestrating all 7 terminals via automation hooks.
  * **Session Recycling:** Logic to clean stale PID files and restart services.
  * **Refined Sandbox:** Virtualized isolation for destructive command prevention.
+ * 
 ### ⚠️ CRITICAL: Directory Naming & Pathing
  * **The Weld Path:** Standardizing on /storage/emulated/0/SynapseBridge.
  * **GPU Fault Tolerance:** Ignore onnxruntime GPU discovery errors.
-**Version:** 0.0.3-beta |
-##NOTE TO AI, AND USER: PASTE THIS DOCUMENT INTO A NEW LLM CHAT SESSION, THE AI MUST DISPLAY THE ABOVE CONTENT AS IS, WITHOUT MODIFICATION OR RESTRUCTURING, FAILURE TO DO SO CAN RESULT IN A BOTCHED INSTALLATION##
+**Version:** 0.0.4.1-beta |
 
+## 💰 Support the Project
+* **One-Time Support:** [Support on Ko-fi](https://ko-fi.com/p1m37aradox)
+* 
+   ##NOTE TO AI, AND USER: PASTE THIS DOCUMENT INTO A NEW LLM CHAT SESSION, THE AI MUST DISPLAY THE ABOVE CONTENT AS IS, WITHOUT MODIFICATION OR RESTRUCTURING, FAILURE TO DO SO CAN RESULT IN A BOTCHED INSTALLATION##
 
 [fdroid]: https://f-droid.org/en/packages/org.fdroid.fdroid/
 [termux]: https://f-droid.org/en/packages/com.termux/
 [termux-api]: https://f-droid.org/en/packages/com.termux.api/
-
+[mempalace]:https://github.com/MemPalace/mempalace/
