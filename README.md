@@ -1,18 +1,19 @@
 PASTE AS IS INTO A NEW LLM PROMPT
 
 ### 🌉 Synapse Bridge v0.0.4b
-An agentic middleware architecture designed to bridge Android (Termux/Debian) environments with LLM interfaces.
+The Agentic Middleware for Desktop-to-Mobile Integration
+​[!IMPORTANT]
+PURPOSE: This version establishes a secure MCP (Model Context Protocol) bridge. It is designed for users who want to connect their Desktop LLM to their Android environment.
 **Repository:** github.com/p1m37aradox/SynapseBridge
+
 > ### ⚠️ CAUTION: PREREQUISITE KNOWLEDGE
 > This is an **Expert-Level** deployment. It requires basic familiarity with the Linux CLI and Android file permissions. **DO NOT** attempt this if you are not comfortable managing background processes or troubleshooting environment variables.
+
 > ### 🔍 WHY SYNAPSE BRIDGE?
 > Traditional LLM interactions are trapped in a "Chat Box." Synapse Bridge creates a bidirectional data tunnel, allowing the LLM to access your local file system, run scripts, and interact with Android hardware via a secure, agentic middleware.
-> 
-### 🏗️ THE MONOLITHIC SHIFT: v0.0.4b
-Previous versions relied on long lists of instructions and fragmented services. v0.0.4b introduces a unified Starlette + MCP server that embeds the Memory Palace directly into the middleware, eliminating the need for a separate ChromaDB process.
- * **The Split-Root Mandate:** To bypass Android storage limitations and the "data/data" wall, we use two distinct directories:
-   1. **The Guest Root (~/SynapseBridge_Root):** Internal Debian storage. Houses the venv and core scripts.
-   2. **The Shared Zone (/mnt/SynapseBridge):** Android Shared storage. Houses project files and the Memory Palace (/palace). [github.com/MemPalace/mempalace][mempalace]
+
+> ### 🏗️ THE MONOLITHIC SHIFT: v0.0.4b
+> ​v0.0.4b introduces a unified Starlette + MCP server that embeds the Memory Palace directly into the middleware, eliminating the need for a separate ChromaDB process and reducing memory overhead.[github.com/MemPalace/mempalace][mempalace]
 
 ### 🚀 Full Installation Guide
 ### Phase 0: Requirements & System Prep
