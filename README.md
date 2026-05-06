@@ -180,9 +180,9 @@ gemini "Perform a Global Weld Verification:
 
 ```
 After initial install is complete, to restore environment:
-* re open 7 terminals
-* execute the first 6 bash commands in the terminals in order with the bash commands.
-* On the 7th, type gemini to enter the CLI.
+* re open 6 terminals
+* execute the first 5 bash commands in the terminals in order with the bash commands.
+* On the 6th, type gemini to enter the CLI.
   (This process will be automated in future builds.)
 
 **Important: Once initialized, share the status of Terminal 1 and 2 and the Pinggy URL from Terminal 3 with the LLM to establish the bridge.**
