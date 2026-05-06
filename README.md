@@ -75,30 +75,37 @@ mkdir -p SynapseBridge_Root && cd SynapseBridge_Root
 python3 -m venv venv
 source venv/bin/activate
 
-# 2. Install dependencies with verified compatibility
+# 2. Install dependencies (Maturin handles the Rust-based components)
 pip install --upgrade pip
-pip install maturin mempalace "chromadb>=0.5.0" "mcp[cli]" starlette uvicorn
+pip install maturin mempalace "mcp[cli]" starlette uvicorn
 
-# 3. Initialize MemPalace
-cd /mnt/SynapseBridge
-mempalace init . --yes
+# 3. INITIALIZE STORAGE: Create the Shared Palace and placeholder entities
+mkdir -p /mnt/SynapseBridge/palace
+echo "[]" > /mnt/SynapseBridge/palace/entities.json
 
-# 4. THE WELD CONFIG: Apply Shared Zone paths
+# 4. THE WELD CONFIG: Apply Shared Zone paths & JSON storage type
+# This ensures both Android and Debian look at the same files.
 mkdir -p ~/.mempalace
 cat > ~/.mempalace/config.json <<EOF
 {
   "palace_path": "/mnt/SynapseBridge/palace",
-  "collection_name": "mempalace_drawers",
+  "storage_type": "json",
+  "collection_name": "synapse_bridge",
   "topic_wings": ["technical", "memory", "SynapseBridge-Main"]
 }
 EOF
 
-# 5. MCP SERVER SWAP: Inject Synapse Bridge Logic
-# Backs up the original library file and replaces it with our custom entry point.
+# 5. Initialize MemPalace logic in the shared directory
+cd /mnt/SynapseBridge
+mempalace init . --yes
+
+# 6. MCP SERVER SWAP: Inject Synapse Bridge Logic
+# Finds the library location, backs up the original, and swaps in our hidden core.
 export MEMPAL_DIR=$(python -c "import mempalace; print(mempalace.__path__[0])")
 cp "$MEMPAL_DIR/mcp_server.py" "$MEMPAL_DIR/mcp_server.backup"
 cp /mnt/SynapseBridge/.mcp_server.py "$MEMPAL_DIR/mcp_server.py"
 
+echo "The Weld is complete. Synapse Bridge is now operational on the JSON storage engine."
 ```
 ### 🟡 Step 4: Feed Gemini the "Map of the House"
 This ensures the Agent knows where to write and how to navigate.
