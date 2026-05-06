@@ -204,8 +204,9 @@ After initial install is complete, to restore environment:
 By using Synapse Bridge, you are granting an AI Agent the ability to execute code and modify files on your device.
  * **The "Break" Factor:** AI can and will follow instructions literally.
  * **No Safety Net:** We are **not responsible** for corrupted data. **Always keep backups.**
+ * 
 ### 🗺️ Roadmap: The Future of Synapse
- * **Auto-Terminal Execution:** Orchestrating all 7 terminals via automation hooks.
+ * **Auto-Terminal Execution:** Orchestrating all 6 terminals via automation hooks.
  * **Session Recycling:** Logic to clean stale PID files and restart services.
  * **Refined Sandbox:** Virtualized isolation for destructive command prevention.
  * 
