@@ -46,7 +46,8 @@ git clone https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/Syna
 # Install Debian and establish the synapse alias
 proot-distro install debian
 
-echo "alias synapse='proot-distro login debian --bind /storage/emulated/0/SynapseBridge:/mnt/SynapseBridge'" >> ~/.bashrc
+
+echo "alias synapse='proot-distro login debian --bind \$HOME/storage/shared/SynapseBridge:/mnt/SynapseBridge'" >> ~/.bashrc
 source ~/.bashrc
 
 ```
@@ -176,7 +177,7 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
 
 ### ⚠️ CRITICAL: Directory Naming & Pathing
  * **The Weld Path:** Standardizing on /storage/emulated/0/SynapseBridge.
- * **Source File:** Ensure your custom script is named .mcp_server.py in the shared directory before Step 5.
+ * **Source File:** Ensure your custom script is named .mcp_server.py in the shared directory before Step 3.
    **Version:** 0.0.4b |
 
 ## 💰 Support the Project
