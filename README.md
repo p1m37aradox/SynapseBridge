@@ -174,7 +174,7 @@ export GOOGLE_API_KEY="YOUR_KEY_HERE"
 
 # 3. The Grand Activation Test
 gemini "Perform a Global Weld Verification:
-1. Read /sdcard/SynapseBridge/GEMINI.md to confirm context.
+1. Read ~/storage/shared/SynapseBridge/GEMINI.md to confirm context.
 2. Check battery via 'termux-battery-status'.
 3. Log 'HOST_ACTIVATION_SUCCESS' to /sdcard/SynapseBridge/GeminiGenerated/GRAND_DECLARATION.txt."
 
