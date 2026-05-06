@@ -47,7 +47,7 @@ git clone https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/Syna
 # Install Debian and establish the synapse alias
 proot-distro install debian
 
-echo "alias synapse='proot-distro login debian --bind /storage/emulated/0/SynapseBridge:/mnt/SynapseBridge'" >> ~/.bashrc
+echo "alias synapse='proot-distro login debian --bind \$HOME/storage/shared/SynapseBridge:/mnt/SynapseBridge'" >> ~/.bashrc
 source ~/.bashrc
 
 ```
@@ -185,7 +185,7 @@ After initial install is complete, to restore environment:
 * On the 6th, type gemini to enter the CLI.
   (This process will be automated in future builds.)
 
-**Important: Once initialized, share the status of Terminal 1 and 2 and the Pinggy URL from Terminal 3 with the LLM to establish the bridge.**
+**Important: Once initialized, share the status of Terminal 1 and the Pinggy URL from Terminal 2 with the LLM to establish the bridge.**
 
 ### 🛠️ Quick Reference & Navigation
 #### **Termux Interface Navigation**
