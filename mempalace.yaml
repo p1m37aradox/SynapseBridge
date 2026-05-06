@@ -1,22 +1,30 @@
-# MemPalace Configuration for Synapse Bridge
-# ------------------------------------------
-
-# THE BRAIN: Fast internal storage for ChromaDB (Prevents the "Starting" hang)
-storage:
-  palace_path: "/root/palace_data"
-
-# THE SOURCE: Where your actual scripts and 3D logic live
-project:
-  root_dir: "/mnt/SynapseBridge"
-
-# THE MINER: How the AI reads your environment
-mining:
-  auto_mine: true
-  watch_paths: ["/mnt/SynapseBridge"]
-  ignore_patterns: ["venv", "__pycache__", ".git", "node_modules"]
-
-# MCP SERVER SETTINGS
-mcp:
-  port: 8081
-  host: "127.0.0.1"
-
+wing: synapsebridge
+rooms:
+- name: geminigenerated
+  description: Files from GeminiGenerated/
+  keywords:
+  - geminigenerated
+  - geminigenerated
+- name: palace
+  description: Files from palace/
+  keywords:
+  - palace
+  - palace
+- name: chroma
+  description: Files from chroma/
+  keywords:
+  - chroma
+  - chroma
+- name: junk_drawer
+  description: Files from junk_drawer/
+  keywords:
+  - junk_drawer
+  - junk_drawer
+- name: backend
+  description: Files from db/
+  keywords:
+  - backend
+  - db
+- name: general
+  description: Files that don't fit other rooms
+  keywords: []

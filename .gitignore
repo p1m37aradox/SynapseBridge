@@ -12,3 +12,7 @@ palace/
 palace/db/
 *.sqlite3
 *.log
+
+# MemPalace per-project files (issue #185)
+mempalace.yaml
+entities.json

@@ -1,6 +1,13 @@
 {
-  "people": [],
+  "people": [
+    "Ivan Burd"
+  ],
   "projects": [
-    "Gatekeeper"
+    "SynapseBridge",
+    "Termux",
+    "Debian",
+    "Pinggy",
+    "Core",
+    "MemPalace"
   ]
 }
