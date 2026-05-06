@@ -115,7 +115,7 @@ mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 
 ```
 ### **Phase 3: Initialize**
-To run the full stack, you must open **5 Termux sessions**. Swipe right from the left edge of the screen and click **"New Session"** until you have five.
+To run the full stack, you must open **5 Termux sessions**. Swipe right from the left edge of the screen (generally the center left) and click **"New Session"** until you have five.
 
 **Terminal 1: SB_MCP (The Core)**
 ```bash
