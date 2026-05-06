@@ -130,47 +130,41 @@ mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 
 ```
 ### **Phase 3: Initialize**
-To run the full stack, you must open **7 Termux sessions**. Swipe right from the left edge of the screen and click **"New Session"** until you have seven.
-**Terminal 1: SB_DB**
+To run the full stack, you must open **6 Termux sessions**. Swipe right from the left edge of the screen (roughly the center left corner) and click **"New Session"** until you have six.
+
+**Terminal 1: SB_MCP (The Core)**
 ```bash
 synapse
 source ~/SynapseBridge_Root/venv/bin/activate
-chroma run --path /mnt/SynapseBridge/palace --port 8000
+mempalace-mcp
 
 ```
-**Terminal 2: SB_Bridge**
+**Terminal 2: Pinggy (The Tunnel)**
 ```bash
 synapse
-source ~/SynapseBridge_Root/venv/bin/activate
-python3 /mnt/SynapseBridge/mcp_server.py
+ssh -p 443 -R0:localhost:8080 qr@a.pinggy.io
 
 ```
-**Terminal 3: SB_Tunnel**
-```bash
-synapse
-ssh -p 443 -R0:localhost:8000 a.pinggy.io
-
-```
-**Terminal 4: SB_Venv (Debian Logic)**
+**Terminal 3: SB_Venv (Debian Logic)**
 ```bash
 synapse
 source ~/SynapseBridge_Root/venv/bin/activate
 # Active code execution and testing
 
 ```
-**Terminal 5: Debian_CLI**
+**Terminal 4: Debian_CLI**
 ```bash
 synapse
 cd /mnt/SynapseBridge
 
 ```
-**Terminal 6: Termux_CLI**
+**Terminal 5: Termux_CLI**
 ```bash
 # Host-level operations (Hardware/Battery/API)
 cd ~
 
 ```
-**Terminal 7: Gemini_CLI**
+**Terminal 6: Gemini_CLI**
 ```bash
 # 1. Install the Agent on the Host (Termux)
 npm install -g @google/generative-ai-cli
