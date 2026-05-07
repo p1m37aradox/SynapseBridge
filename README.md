@@ -47,7 +47,6 @@ git clone https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/Syna
 # Install Debian and establish the synapse alias
 proot-distro install debian
 
-
 echo "alias synapse='proot-distro login debian --bind \$HOME/storage/shared/SynapseBridge:/mnt/SynapseBridge'" >> ~/.bashrc
 source ~/.bashrc
 
@@ -121,41 +120,81 @@ mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 
 ```
 ### **Phase 3: Initialize**
-To run the full stack, you must open **5 Termux sessions**. Swipe right from the left edge of the screen (generally the center left) and click **"New Session"** until you have five.
+🟡 User Interface (UI) options:
+You can use our custom tmux UI or run each individually.
+*Note on custom UI, if you are already using a cusrom UI this may break it, this is for a fresh Termux install focused on the SynapseBridge.
 
-**Terminal 1: SB_MCP (The Core)**
+**CUSTOM UI**
+<img src="Docs/Screenshot_20260506-182835.png" width="350" alt="Synapse Bridge UI">
+
+*Run these commands in the root Termux terminal. If you're in the (venv) or Debian environment, type exit and press enter until you get to the root terminal prompt: ~$
 ```bash
+# Modify Termux UI: Adds NEXT and PREV buttons for SynapseBridge navigation.
+mkdir -p ~/.termux && echo "extra-keys = [['ESC','CTRL','ALT','TAB','LEFT','DOWN','UP','RIGHT'],[{macro: 'CTRL b n', display: 'NEXT'}, {macro: 'CTRL b p', display: 'PREV'},'HOME','END','PGUP','PGDN','MENU','EXIT']]" > ~/.termux/termux.properties && termux-reload-settings
+
+#Modify UI: Changes Green status bar at bottom of terminal for easier reading.
+echo 'set -g status-right ""' >> ~/.tmux.conf
+echo 'set -g status-left-length 20' >> ~/.tmux.conf
+echo 'set -g status-style bg=default,fg=white' >> ~/.tmux.conf
+echo 'set -g window-status-current-style fg=cyan,bold' >> ~/.tmux.conf
+tmux source-file ~/.tmux.conf 2>/dev/null
+
+#Make the custom UI file executable.
+chmod +x scripts/UI_main.sh
+
+#This creates the alias to launch the custom UI.
+echo "alias synapse-ui='bash ~/SynapseBridge_Root/UI_main.sh'" >> ~/.bashrc
+source ~/.bashrc
+```
+*Launch the custom UI /To exit navigate to window 5 with the NEXT or PREV buttons and press ENTER. You can use this command as your start from now on.
+**START**
+```bash
+synapse-ui
+```
+OR 
+
+To run the full stack, you must open **5 Termux sessions**. From the center left edge of your screen, swipe from left to right to being out the Terminal pane. Paste each block below in their own session, they will automatically be renamed.
+
+<img src="<img src="Docs/Screenshot_20260506-182835.png" width="350" alt="Synapse Bridge UI2">" width="350" alt="Synapse Bridge UI">
+
+
+**Terminal 1: synapse-mempalace-mcp (MCP)**
+```bash
+printf '\e]1;synapse-mempalace-mcp\a'
 synapse
 source ~/SynapseBridge_Root/venv/bin/activate
 mempalace-mcp
 
 ```
-**Terminal 2: Pinggy (The Tunnel)**
+**Terminal 2: Pinggy (Verifies the loop)**
+You can choose the tunnel service of your choice if you want online LLM interaction.
 ```bash
+printf '\e]1;Pinggy\a'
 synapse
 ssh -p 443 -R0:localhost:8080 qr@a.pinggy.io
 
 ```
 **Terminal 3: SB_Venv (Debian Logic)**
 ```bash
+printf '\e]1;SB_Venv\a'
 synapse
 source ~/SynapseBridge_Root/venv/bin/activate
-# Active code execution and testing
 
 ```
 **Terminal 4: Debian_CLI**
 ```bash
+printf '\e]1;Debian_CLI\a'
 synapse
 cd /mnt/SynapseBridge
 
 ```
 **Terminal 5: Termux_CLI**
 ```bash
-# Host-level operations (Hardware/Battery/API)
+printf '\e]1;Termux_CLI\a'
 cd ~
 
 ```
-**Important: Once initialized, share the status of Terminal 1 and the Pinggy URL from Terminal 2 with the LLM to establish the bridge.**
+**Important: Once initialized, share the status of Terminal 1 MCP and the Pinggy URL from Terminal 2 with the LLM to establish the bridge.**
 
 ### 🛠️ Quick Reference & Navigation
 #### **Termux Interface Navigation**
