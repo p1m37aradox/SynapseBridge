@@ -145,7 +145,8 @@ source ~/.bashrc
 
 ```
 *Launch the custom UI /To exit navigate to window 5 with the NEXT or PREV buttons and press ENTER. You can use this command as your start from now on.
-**START**
+
+START
 ```bash
 synapse-ui
 ```
@@ -194,6 +195,12 @@ cd ~
 
 ```
 **Important: Once initialized, share the status of Terminal 1 MCP and the Pinggy URL from Terminal 2 with the LLM to establish the bridge.**
+
+🛠️ Maintenance & Updates
+To keep your bridge current, run this command from the Termux Host:
+```bash
+cd ~/storage/shared/SynapseBridge && git config --global --add safe.directory /storage/emulated/0/SynapseBridge && git fetch origin main && git reset --hard origin/main && git clean -fd
+```
 
 ### 🛠️ Quick Reference & Navigation
 #### **Termux Interface Navigation**
