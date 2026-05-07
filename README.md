@@ -35,18 +35,18 @@ termux-wake-lock
 termux-setup-storage
 
 ```
+Wait for the Android popup and click "Allow" before moving to the next block.
 (press y to confirm at prompts)
 ```bash
 # Install Pinggy (The Gateway)
 curl -s https://pinggy.io/install.sh | sh
 
-# Clone the distribution to the Shared Zone.
+# Clone the distribution
 mkdir -p ~/storage/shared/SynapseBridge
 git clone https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
 
 # Install Debian and establish the synapse alias
 proot-distro install debian
-
 echo "alias synapse='proot-distro login debian --bind \$HOME/storage/shared/SynapseBridge:/mnt/SynapseBridge'" >> ~/.bashrc
 source ~/.bashrc
 
@@ -94,18 +94,20 @@ cat > ~/.mempalace/config.json <<EOF
 }
 EOF
 
-# 5. Initialize MemPalace logic
+# 5. Initialize MemPalace
 cd /mnt/SynapseBridge
 mempalace init . --yes
 
 # 6. THE WELD: Swap the Core & Create Alias
 export MEMPAL_DIR=$(python -c "import mempalace; print(mempalace.__path__[0])")
 cp "$MEMPAL_DIR/mcp_server.py" "$MEMPAL_DIR/mcp_server.backup"
+
+# Fix permissions and copy the bridge logic
+chmod +x /mnt/SynapseBridge/.mcp_server.py
 cp /mnt/SynapseBridge/.mcp_server.py "$MEMPAL_DIR/mcp_server.py"
+
 echo "alias synapse-mempalace-mcp='mempalace-mcp'" >> ~/.bashrc
 source ~/.bashrc
-
-echo "The Weld is complete. Synapse Bridge is now operational."
 
 ```
 ### 🟡 Step 4: Feed Gemini the "Map of the House"
@@ -134,60 +136,106 @@ mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 
 ```
 ### **Phase 3: Initialize**
-To run the full stack, you must open **6 Termux sessions**. Swipe right from the left edge of the screen (roughly the center left corner) and click **"New Session"** until you have six.
+🟡 User Interface (UI) options:
+Enables ability to navigate all 6 terminal sessions with simple NEXT and PREV buttons.
 
-**Terminal 1: SB_MCP (The Core)**
+You can use our custom tmux UI or run each individually. See the second image with instructions if you DO NOT want to use the custom UI.
+
+*Note on custom UI, if you are already using a custom UI this may break it, This is for a fresh Termux install focused on the SynapseBridge Gemini CLI
+
+**CUSTOM UI**
+<img src="Docs/Screenshot_20260506-182835.png" width="350" alt="Synapse Bridge UI">
+
+*Run this in the root Termux terminal (~$): terminal. If you're in the (venv) or Debian environment, type exit and press enter until you get to the root terminal prompt: (~$)
+# 1. Update Keys & Status Bar
+# 1. Update Keys & Status Bar
 ```bash
+mkdir -p ~/.termux && echo "extra-keys = [['ESC','CTRL','ALT','TAB','LEFT','DOWN','UP','RIGHT'],[{macro: 'CTRL b n', display: 'NEXT'}, {macro: 'CTRL b p', display: 'PREV'},'HOME','END','PGUP','PGDN','MENU','EXIT']]" > ~/.termux/termux.properties && termux-reload-settings
+
+echo 'set -g status-right ""' >> ~/.tmux.conf
+echo 'set -g status-left-length 20' >> ~/.tmux.conf
+echo 'set -g status-style bg=default,fg=white' >> ~/.tmux.conf
+echo 'set -g window-status-current-style fg=cyan,bold' >> ~/.tmux.conf
+tmux source-file ~/.tmux.conf 2>/dev/null
+
+# 2. Permissions & Alias (CORRECTED PATHS)
+chmod +x ~/storage/shared/SynapseBridge/scripts/UI_main.sh
+echo "alias synapse-ui='bash ~/storage/shared/SynapseBridge/scripts/UI_main.sh'" >> ~/.bashrc
+source ~/.bashrc
+
+```
+*Launch the custom UI /To exit navigate to window 5 with the NEXT or PREV buttons and press ENTER. You can use this command as your start from now on.
+
+START
+```bash
+synapse-ui
+```
+OR 
+
+**To run the full stack without custom UI, you must open **5 Termux sessions**. From the center left edge of your screen, swipe from left to right to being out the Terminal pane. Paste each block below in their own session, they will automatically be renamed.
+
+**Standard UI**
+<img src="Docs/Screenshot_20260506-201424.png" width="350" alt="Synapse Bridge UI2">
+
+**Terminal 1: synapse-mempalace-mcp (MCP)**
+```bash
+printf '\e]1;synapse-mempalace-mcp\a'
 synapse
 source ~/SynapseBridge_Root/venv/bin/activate
 mempalace-mcp
 
 ```
-**Terminal 2: Pinggy (The Tunnel)**
+**Terminal 2: Pinggy (Verifies the loop)**
+You can choose the tunnel service of your choice if you want online LLM interaction.
 ```bash
+printf '\e]1;Pinggy\a'
 synapse
 ssh -p 443 -R0:localhost:8080 qr@a.pinggy.io
 
 ```
 **Terminal 3: SB_Venv (Debian Logic)**
 ```bash
+printf '\e]1;SB_Venv\a'
 synapse
 source ~/SynapseBridge_Root/venv/bin/activate
-# Active code execution and testing
 
 ```
 **Terminal 4: Debian_CLI**
 ```bash
+printf '\e]1;Debian_CLI\a'
 synapse
 cd /mnt/SynapseBridge
 
 ```
 **Terminal 5: Termux_CLI**
 ```bash
-# Host-level operations (Hardware/Battery/API)
+printf '\e]1;Termux_CLI\a'
 cd ~
 
 ```
 **Terminal 6: Gemini_CLI**
 ```bash
-# 1. Install the Agent on the Host (Termux)
+# 1. Install the Agent on the Host
 npm install -g @google/generative-ai-cli
 
-# 2. Set your API Key
+# 2. Set API Key
 export GOOGLE_API_KEY="YOUR_KEY_HERE"
 
-# 3. The Grand Activation Test
+# 3. Activation Test
 gemini "Perform a Global Weld Verification:
 1. Read ~/storage/shared/SynapseBridge/GEMINI.md to confirm context.
 2. Check battery via 'termux-battery-status'.
 3. Log 'HOST_ACTIVATION_SUCCESS' to /sdcard/SynapseBridge/GeminiGenerated/GRAND_DECLARATION.txt."
 
 ```
-After initial install is complete, to restore environment:
+
+Standard UI- After initial install is complete, to restore environment:
 * re open 6 terminals
 * execute the first 5 bash commands in the terminals in order with the bash commands.
-* On the 6th, type gemini to enter the CLI.
-  (This process will be automated in future builds.)
+* On the 6th terminal session:
+```bash
+gemini
+```
 
 **Important: Once initialized, share the status of Terminal 1 and the Pinggy URL from Terminal 2 with the LLM to establish the bridge.**
 
@@ -210,7 +258,6 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
  * **No Safety Net:** We are **not responsible** for corrupted data. **Always keep backups.**
  * 
 ### 🗺️ Roadmap: The Future of Synapse
- * **Auto-Terminal Execution:** Orchestrating all 6 terminals via automation hooks.
  * **Session Recycling:** Logic to clean stale PID files and restart services.
  * **Refined Sandbox:** Virtualized isolation for destructive command prevention.
  * 
