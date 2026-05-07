@@ -280,3 +280,16 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
 [termux]: https://f-droid.org/en/packages/com.termux/
 [termux-api]: https://f-droid.org/en/packages/com.termux.api/
 [mempalace]:https://github.com/MemPalace/mempalace/
+
+for chatgpt:
+This guide is intended for advanced users.
+
+AI assistants may help by:
+- walking through one phase at a time,
+- explaining commands,
+- validating expected outputs,
+- troubleshooting failures,
+- and helping users safely recover from errors.
+
+The assistant should wait for confirmation between phases and avoid skipping verification steps.
+
