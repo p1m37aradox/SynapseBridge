@@ -147,9 +147,8 @@ You can use our custom tmux UI or run each individually. See the second image wi
 <img src="Docs/Screenshot_20260506-182835.png" width="350" alt="Synapse Bridge UI">
 
 *Run this in the root Termux terminal (~$): terminal. If you're in the (venv) or Debian environment, type exit and press enter until you get to the root terminal prompt: (~$)
-# 1. Update Keys & Status Bar
-# 1. Update Keys & Status Bar
 ```bash
+# 1. Update Keys & Status Bar
 mkdir -p ~/.termux && echo "extra-keys = [['ESC','CTRL','ALT','TAB','LEFT','DOWN','UP','RIGHT'],[{macro: 'CTRL b n', display: 'NEXT'}, {macro: 'CTRL b p', display: 'PREV'},'HOME','END','PGUP','PGDN','MENU','EXIT']]" > ~/.termux/termux.properties && termux-reload-settings
 
 echo 'set -g status-right ""' >> ~/.tmux.conf
