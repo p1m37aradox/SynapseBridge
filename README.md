@@ -76,16 +76,15 @@ mkdir -p SynapseBridge_Root && cd SynapseBridge_Root
 python3 -m venv venv
 source venv/bin/activate
 
-# 2. Install dependencies (Maturin handles the Rust-based components)
+# 2. Install dependencies
 pip install --upgrade pip
 pip install maturin mempalace "mcp[cli]" starlette uvicorn
 
-# 3. INITIALIZE STORAGE: Create the Shared Palace and placeholder entities
+# 3. INITIALIZE STORAGE
 mkdir -p /mnt/SynapseBridge/palace
 echo "[]" > /mnt/SynapseBridge/palace/entities.json
 
-# 4. THE WELD CONFIG: Apply Shared Zone paths & JSON storage type
-# This ensures both Android and Debian look at the same files.
+# 4. THE WELD CONFIG
 mkdir -p ~/.mempalace
 cat > ~/.mempalace/config.json <<EOF
 {
@@ -96,22 +95,27 @@ cat > ~/.mempalace/config.json <<EOF
 }
 EOF
 
-# 5. Initialize MemPalace logic in the shared directory
+# 5. Initialize MemPalace logic
 cd /mnt/SynapseBridge
 mempalace init . --yes
 
-# 6. MCP SERVER SWAP: Inject Synapse Bridge Logic
-# Finds the library location, backs up the original, and swaps in our hidden core.
+# 6. THE WELD: Swap the Core & Create Alias
 export MEMPAL_DIR=$(python -c "import mempalace; print(mempalace.__path__[0])")
 cp "$MEMPAL_DIR/mcp_server.py" "$MEMPAL_DIR/mcp_server.backup"
 cp /mnt/SynapseBridge/.mcp_server.py "$MEMPAL_DIR/mcp_server.py"
+echo "alias synapse-mempalace-mcp='mempalace-mcp'" >> ~/.bashrc
+source ~/.bashrc
 
-echo "The Weld is complete. Synapse Bridge is now operational on the JSON storage engine."
+echo "The Weld is complete. Synapse Bridge is now operational."
+
 ```
-### 🟡 Step 4: Populate the Memory
-Mine the palace
+🟡 Step 4: Populate the Memory
+Run this block to enter the environment and index your files.
 ```bash
-synapse
+# Enter environment if not already inside
+synapse 
+
+# Activate and index
 source ~/SynapseBridge_Root/venv/bin/activate
 mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 
