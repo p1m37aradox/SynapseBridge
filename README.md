@@ -18,8 +18,7 @@ Gemini repo:
 > ### 🔍 WHY SYNAPSE BRIDGE?
 > Traditional LLM interactions are trapped in a "Chat Box." Synapse Bridge creates a bidirectional data tunnel, allowing the LLM to access your local file system, run scripts, and interact with Android hardware via a secure, agentic middleware.
 > 
-### 🏗️ WHY WE STARTED FRESH: The Shift to MCP
-PreviouTHE MONOLITHIC SYNTHESIS: v0.0.4.1b-GeminiCLI
+### 🏗️ THE MONOLITHIC SYNTHESIS: v0.0.4.1b-GeminiCLI
 ​v0.0.4.1b-GeminiCLI represents a unified Starlette + MCP server that embeds the Memory Palace directly into the middleware. By eliminating the need for a separate ChromaDB process, we’ve drastically reduced memory overhead on Android. This "Synthesis" build specifically optimizes the bridge for the Gemini CLI, enabling high-frequency host-to-guest execution without framework fatigue.
 [github.com/MemPalace/mempalace](https://github.com/MemPalace/mempalace)
 
