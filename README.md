@@ -4,7 +4,12 @@ PASTE AS IS INTO A NEW LLM PROMPT
 The Agentic Middleware for Desktop-to-Mobile Integration
 
 PURPOSE: This version establishes a secure MCP (Model Context Protocol) bridge. It is designed for users who want to connect their Desktop LLM to their Android environment.
-**Repository:** github.com/p1m37aradox/SynapseBridge
+**Repository:** 
+Main:
+[github.com/p1m37aradox/SynapseBridge](https://github.com/p1m37aradox/SynapseBridge)
+
+Gemini repo:
+[https://github.com/p1m37aradox/SynapseBridge/tree/gemini.active](https://github.com/p1m37aradox/SynapseBridge/tree/gemini-active)
 
 > ### ⚠️ CAUTION: PREREQUISITE KNOWLEDGE
 > This is an **Expert-Level** deployment. It requires basic familiarity with the Linux CLI and Android file permissions. **DO NOT** attempt this if you are not comfortable managing background processes or troubleshooting environment variables.
