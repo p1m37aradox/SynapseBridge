@@ -1,4 +1,4 @@
-PASTE AS IS INTO A NEW ANDROID LLM PROMPT
+PASTE AS IS INTO A ANDROID LLM PROMPT
 
 ### 🌉 Synapse Bridge v0.0.4.1b-GeminiCLI
 This version establishes a secure, unified MCP (Model Context Protocol) bridge specifically optimized for the Gemini CLI. It provides the Gemini Agent with low-latency access to the Android filesystem, hardware APIs, and an embedded memory engine.
