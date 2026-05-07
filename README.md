@@ -1,9 +1,13 @@
 PASTE AS IS INTO A NEW LLM PROMPT
 
 ### 🌉 Synapse Bridge v0.0.4.1b-GeminiCLI
-An agentic middleware architecture designed to bridge Android (Termux/Debian) environments with LLM interfaces. Integrated with Gemini CLI.
+This version establishes a secure, unified MCP (Model Context Protocol) bridge specifically optimized for the Gemini CLI. It provides the Gemini Agent with low-latency access to the Android filesystem, hardware APIs, and an embedded memory engine.
 
-**Repository:** github.com/p1m37aradox/SynapseBridge
+​Repository: https://github.com/p1m37aradox/SynapseBridge/tree/gemini-active
+if your looking for the main repo:
+https://github.com/p1m37aradox/SynapseBridge
+
+
 > ### ⚠️ CAUTION: PREREQUISITE KNOWLEDGE
 > This is an **Expert-Level** deployment. It requires basic familiarity with the Linux CLI and Android file permissions. **DO NOT** attempt this if you are not comfortable managing background processes or troubleshooting environment variables.
 > 
@@ -11,10 +15,10 @@ An agentic middleware architecture designed to bridge Android (Termux/Debian) en
 > Traditional LLM interactions are trapped in a "Chat Box." Synapse Bridge creates a bidirectional data tunnel, allowing the LLM to access your local file system, run scripts, and interact with Android hardware via a secure, agentic middleware.
 > 
 ### 🏗️ WHY WE STARTED FRESH: The Shift to MCP
-Previous versions relied on long lists of instructions (directives). This approach failed due to instruction fatigue and framework limitations.
- * **The Split-Root Mandate:** To bypass Android storage limitations and the "data/data" wall, we use two distinct directories:
-   1. **The Guest Root (~/SynapseBridge_Root):** Internal Debian storage. Houses the venv and core scripts.
-   2. **The Shared Zone (/mnt/SynapseBridge):** Android Shared storage. Houses project files and the Memory Palace (/palace). - github.com/MemPalace/mempalace
+PreviouTHE MONOLITHIC SYNTHESIS: v0.0.4.1b-GeminiCLI
+​v0.0.4.1b-GeminiCLI represents a unified Starlette + MCP server that embeds the Memory Palace directly into the middleware. By eliminating the need for a separate ChromaDB process, we’ve drastically reduced memory overhead on Android. This "Synthesis" build specifically optimizes the bridge for the Gemini CLI, enabling high-frequency host-to-guest execution without framework fatigue.
+[github.com/MemPalace/mempalace](https://github.com/MemPalace/mempalace)
+
 ### 🚀 Full Installation Guide
 ### Phase 0: Requirements & System Prep
 **Note: Play Store versions are deprecated. F-Droid is mandatory.**
