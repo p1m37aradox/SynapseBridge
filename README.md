@@ -1,7 +1,9 @@
-PASTE AS IS INTO A NEW LLM PROMPT
+PASTE AS IS INTO A ANDROID LLM PROMPT
 
 ### 🌉 Synapse Bridge v0.0.4b
 A mobile agent framework for Android that enables desktop LLMs or custom agent builds to interact with local tools, files, and device capabilities through a secure MCP-based middleware layer.
+
+Tested with: Gemini, ChatGPT, Claude, Perplexity, Poe
 
 For devs utilizing this project as a platform to develop Agents on Android:
 [Roadmap](./Docs/Roadmap.md)
