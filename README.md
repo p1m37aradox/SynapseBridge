@@ -153,7 +153,8 @@ OR
 
 **To run the full stack without custom UI, you must open **5 Termux sessions**. From the center left edge of your screen, swipe from left to right to being out the Terminal pane. Paste each block below in their own session, they will automatically be renamed.
 
-<img src="<img src="Docs/Screenshot_20260506-182835.png" width="350" alt="Synapse Bridge UI2">" width="350" alt="Synapse Bridge UI">
+**Standard UI*
+<img src="<img src="Docs/Screenshot_20260506-182835.png" width="350" alt="Synapse Bridge UI2">
 
 
 **Terminal 1: synapse-mempalace-mcp (MCP)**
