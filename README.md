@@ -220,7 +220,6 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
  * **No Safety Net:** We are **not responsible** for corrupted data. **Always keep backups.**
 
 ### 🗺️ Roadmap: The Future of Synapse
- * **Auto-Terminal Execution:** Orchestrating all sessions via automation hooks.
  * **Session Recycling:** Logic to clean stale PID files and restart services.
  * **Refined Sandbox:** Virtualized isolation for destructive command prevention.
 
