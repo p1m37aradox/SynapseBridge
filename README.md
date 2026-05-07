@@ -121,7 +121,7 @@ mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 ```
 ### **Phase 3: Initialize**
 🟡 User Interface (UI) options:
-You can use our custom tmux UI or run each individually.
+You can use our custom tmux UI or run each individually. See the second image with instructions if you DO NOT want to use the custom UI.
 *Note on custom UI, if you are already using a cusrom UI this may break it, this is for a fresh Termux install focused on the SynapseBridge.
 
 **CUSTOM UI**
@@ -129,22 +129,20 @@ You can use our custom tmux UI or run each individually.
 
 *Run these commands in the root Termux terminal. If you're in the (venv) or Debian environment, type exit and press enter until you get to the root terminal prompt: ~$
 ```bash
-# Modify Termux UI: Adds NEXT and PREV buttons for SynapseBridge navigation.
+# 1. Update Keys & Status Bar
 mkdir -p ~/.termux && echo "extra-keys = [['ESC','CTRL','ALT','TAB','LEFT','DOWN','UP','RIGHT'],[{macro: 'CTRL b n', display: 'NEXT'}, {macro: 'CTRL b p', display: 'PREV'},'HOME','END','PGUP','PGDN','MENU','EXIT']]" > ~/.termux/termux.properties && termux-reload-settings
 
-#Modify UI: Changes Green status bar at bottom of terminal for easier reading.
 echo 'set -g status-right ""' >> ~/.tmux.conf
 echo 'set -g status-left-length 20' >> ~/.tmux.conf
 echo 'set -g status-style bg=default,fg=white' >> ~/.tmux.conf
 echo 'set -g window-status-current-style fg=cyan,bold' >> ~/.tmux.conf
 tmux source-file ~/.tmux.conf 2>/dev/null
 
-#Make the custom UI file executable.
-chmod +x scripts/UI_main.sh
-
-#This creates the alias to launch the custom UI.
-echo "alias synapse-ui='bash ~/SynapseBridge_Root/UI_main.sh'" >> ~/.bashrc
+# 2. Permissions & Alias (CORRECTED PATHS)
+chmod +x ~/storage/shared/SynapseBridge/scripts/UI_main.sh
+echo "alias synapse-ui='bash ~/storage/shared/SynapseBridge/scripts/UI_main.sh'" >> ~/.bashrc
 source ~/.bashrc
+
 ```
 *Launch the custom UI /To exit navigate to window 5 with the NEXT or PREV buttons and press ENTER. You can use this command as your start from now on.
 **START**
@@ -153,7 +151,7 @@ synapse-ui
 ```
 OR 
 
-To run the full stack, you must open **5 Termux sessions**. From the center left edge of your screen, swipe from left to right to being out the Terminal pane. Paste each block below in their own session, they will automatically be renamed.
+**To run the full stack without custom UI, you must open **5 Termux sessions**. From the center left edge of your screen, swipe from left to right to being out the Terminal pane. Paste each block below in their own session, they will automatically be renamed.
 
 <img src="<img src="Docs/Screenshot_20260506-182835.png" width="350" alt="Synapse Bridge UI2">" width="350" alt="Synapse Bridge UI">
 
