@@ -35,6 +35,8 @@ termux-wake-lock
 termux-setup-storage
 
 ```
+"Wait for the Android popup and click Allow before moving to the next block."
+
 (press y to confirm at prompts)
 ```bash
 # Install Pinggy (The Gateway)
@@ -101,11 +103,13 @@ mempalace init . --yes
 # 6. THE WELD: Swap the Core & Create Alias
 export MEMPAL_DIR=$(python -c "import mempalace; print(mempalace.__path__[0])")
 cp "$MEMPAL_DIR/mcp_server.py" "$MEMPAL_DIR/mcp_server.backup"
+
+# Fix permissions and copy the bridge logic
+chmod +x /mnt/SynapseBridge/.mcp_server.py
 cp /mnt/SynapseBridge/.mcp_server.py "$MEMPAL_DIR/mcp_server.py"
+
 echo "alias synapse-mempalace-mcp='mempalace-mcp'" >> ~/.bashrc
 source ~/.bashrc
-
-echo "The Weld is complete. Synapse Bridge is now operational."
 
 ```
 🟡 Step 4: Populate the Memory
@@ -196,11 +200,6 @@ cd ~
 ```
 **Important: Once initialized, share the status of Terminal 1 MCP and the Pinggy URL from Terminal 2 with the LLM to establish the bridge.**
 
-🛠️ Maintenance & Updates
-To keep your bridge current, run this command from the Termux Host:
-```bash
-cd ~/storage/shared/SynapseBridge && git config --global --add safe.directory /storage/emulated/0/SynapseBridge && git fetch origin main && git reset --hard origin/main && git clean -fd
-```
 
 ### 🛠️ Quick Reference & Navigation
 #### **Termux Interface Navigation**
