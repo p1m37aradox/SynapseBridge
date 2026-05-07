@@ -1,7 +1,7 @@
 PASTE AS IS INTO A NEW LLM PROMPT
 
 ### 🌉 Synapse Bridge v0.0.4.1b-GeminiCLI
-An agentic middleware architecture designed to bridge Android (Termux/Debian) environments with LLM interfaces.
+An agentic middleware architecture designed to bridge Android (Termux/Debian) environments with LLM interfaces. Integrated with Gemini CLI.
 
 **Repository:** github.com/p1m37aradox/SynapseBridge
 > ### ⚠️ CAUTION: PREREQUISITE KNOWLEDGE
