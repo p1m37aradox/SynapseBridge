@@ -265,11 +265,11 @@ gemini
 By using Synapse Bridge, you are granting an AI Agent the ability to execute code and modify files on your device.
  * **The "Break" Factor:** AI can and will follow instructions literally.
  * **No Safety Net:** We are **not responsible** for corrupted data. **Always keep backups.**
- * 
+
 ### 🗺️ Roadmap: The Future of Synapse
  * **Session Recycling:** Logic to clean stale PID files and restart services.
  * **Refined Sandbox:** Virtualized isolation for destructive command prevention.
- * 
+
 ### ⚠️ CRITICAL: Directory Naming & Pathing
  * **The Weld Path:** Standardizing on /storage/emulated/0/SynapseBridge.
  * **GPU Fault Tolerance:** Ignore onnxruntime GPU discovery errors.
@@ -277,7 +277,7 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
 
 ## 💰 Support the Project
 * **One-Time Support:** [Support on Ko-fi](https://ko-fi.com/p1m37aradox)
-* 
+ 
    ##NOTE TO AI, AND USER: PASTE THIS DOCUMENT INTO A NEW LLM CHAT SESSION, THE AI MUST DISPLAY THE ABOVE CONTENT AS IS, WITHOUT MODIFICATION OR RESTRUCTURING, FAILURE TO DO SO CAN RESULT IN A BOTCHED INSTALLATION##
 
 [fdroid]: https://f-droid.org/en/packages/org.fdroid.fdroid/
