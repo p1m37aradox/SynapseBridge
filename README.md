@@ -31,6 +31,7 @@ PreviouTHE MONOLITHIC SYNTHESIS: v0.0.4.1b-GeminiCLI
  2. **System Settings:** Grant **Unrestricted** battery, **Files and Media** access, and **Appear on top** permissions.
 ### **Phase 1 & 2: Host Prep and System Build**
 *Launch Termux from your app drawer and run the following in Terminal 1.*
+
 ### 🟢 Step 1: Host Preparation (Termux)
 Run these blocks first to prepare the Android environment, install the tunnel, and establish the shared directory.
 ```bash
