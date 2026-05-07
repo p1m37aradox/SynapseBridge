@@ -1,9 +1,8 @@
 PASTE AS IS INTO A NEW LLM PROMPT
 
 ### 🌉 Synapse Bridge v0.0.4b
-The Agentic Middleware for Desktop-to-Mobile Integration
+A mobile agent framework for Android that enables desktop LLMs or custom agent builds to interact with local tools, files, and device capabilities through a secure MCP-based middleware layer.
 
-PURPOSE: This version establishes a secure MCP (Model Context Protocol) bridge. It is designed for users who want to connect their Desktop LLM to their Android environment.
 **Repository:** 
 Main:
 [github.com/p1m37aradox/SynapseBridge](https://github.com/p1m37aradox/SynapseBridge)
@@ -30,6 +29,7 @@ Gemini repo:
  2. **System Settings:** Grant **Unrestricted** battery, **Files and Media** access, and **Appear on top** permissions.
 ### **Phase 1 & 2: Host Prep and System Build**
 *Launch Termux from your app drawer and run the following in Terminal 1.*
+
 ### 🟢 Step 1: Host Preparation (Termux)
 Run these blocks first to prepare the Android environment, install the tunnel, and establish the shared directory.
 ```bash
