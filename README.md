@@ -2,7 +2,7 @@ PASTE AS IS INTO A NEW LLM PROMPT
 
 ### 🌉 Synapse Bridge v0.0.4b
 The Agentic Middleware for Desktop-to-Mobile Integration
-​[!IMPORTANT]
+
 PURPOSE: This version establishes a secure MCP (Model Context Protocol) bridge. It is designed for users who want to connect their Desktop LLM to their Android environment.
 **Repository:** github.com/p1m37aradox/SynapseBridge
 
