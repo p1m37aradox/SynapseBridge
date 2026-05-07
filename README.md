@@ -137,16 +137,16 @@ mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 ```
 ### **Phase 3: Initialize**
 🟡 User Interface (UI) options:
-Enables ability to navigate all 6 terminal sessions with simple NEXT and PREV buttons.
+Enables ability to navigate all 5 terminal sessions with simple NEXT and PREV buttons.
 
 You can use our custom tmux UI or run each individually. See the second image with instructions if you DO NOT want to use the custom UI.
 
-*Note on custom UI, if you are already using a custom UI this may break it, This is for a fresh Termux install focused on the SynapseBridge Gemini CLI
+*Note on custom UI, if you are already using a custom UI this may break it, This is for a fresh Termux install focused on the SynapseBridge.
 
 **CUSTOM UI**
 <img src="Docs/Screenshot_20260506-182835.png" width="350" alt="Synapse Bridge UI">
 
-*Run this in the root Termux terminal (~$): terminal. If you're in the (venv) or Debian environment, type exit and press enter until you get to the root terminal prompt: (~$)
+*Run these commands in the root Termux terminal. If you're in the (venv) or Debian environment, type exit and press enter until you get to the root terminal prompt: ~$
 ```bash
 # 1. Update Keys & Status Bar
 mkdir -p ~/.termux && echo "extra-keys = [['ESC','CTRL','ALT','TAB','LEFT','DOWN','UP','RIGHT'],[{macro: 'CTRL b n', display: 'NEXT'}, {macro: 'CTRL b p', display: 'PREV'},'HOME','END','PGUP','PGDN','MENU','EXIT']]" > ~/.termux/termux.properties && termux-reload-settings
