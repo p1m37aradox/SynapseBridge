@@ -6,8 +6,7 @@ A mobile agent framework for Android that enables desktop LLMs or custom agent b
 For devs utilizing this project as a platform to develop Agents on Android:
 [Roadmap](./Docs/Roadmap.md)
 
-**Repository:** 
-Main:
+Main repo:
 [SynapseBridge](https://github.com/p1m37aradox/SynapseBridge)
 
 Gemini repo:
