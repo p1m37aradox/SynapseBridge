@@ -163,7 +163,7 @@ echo "alias synapse-ui='bash ~/storage/shared/SynapseBridge/scripts/UI_main.sh'"
 source ~/.bashrc
 
 ```
-*Launch the custom UI /To exit navigate to window 5 with the NEXT or PREV buttons and press ENTER. You can use this command as your start from now on.
+*Launch the custom UI /To exit navigate to window 6 with the NEXT or PREV buttons and press ENTER. You can use this command as your start from now on.
 
 START
 ```bash
@@ -171,7 +171,7 @@ synapse-ui
 ```
 OR 
 
-**To run the full stack without custom UI, you must open **5 Termux sessions**. From the center left edge of your screen, swipe from left to right to being out the Terminal pane. Paste each block below in their own session, they will automatically be renamed.
+**To run the full stack without custom UI, you must open **6 Termux sessions**. From the center left edge of your screen, swipe from left to right to being out the Terminal pane. Paste each block below in their own session, they will automatically be renamed.
 
 **Standard UI**
 <img src="Docs/Screenshot_20260507-071127.png" width="350" alt="Synapse Bridge UI2">
