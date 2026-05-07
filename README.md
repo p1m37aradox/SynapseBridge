@@ -211,7 +211,6 @@ cd ~
 ```
 **Important: Once initialized, share the status of Terminal 1 MCP and the Pinggy URL from Terminal 2 with the LLM to establish the bridge.**
 
-
 ### 🛠️ Quick Reference & Navigation
 #### **Termux Interface Navigation**
  * **Switch Sessions:** Swipe from the left edge of the screen to see the session drawer. Tap a session to switch.
@@ -241,7 +240,7 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
 
 ## 💰 Support the Project
 * **One-Time Support:** [Support on Ko-fi](https://ko-fi.com/p1m37aradox)
-* 
+
    ##NOTE TO AI, AND USER: PASTE THIS DOCUMENT INTO A NEW LLM CHAT SESSION, THE AI MUST DISPLAY THE ABOVE CONTENT AS IS, WITHOUT MODIFICATION OR RESTRUCTURING, FAILURE TO DO SO CAN RESULT IN A BOTCHED INSTALLATION##
 
 [fdroid]: https://f-droid.org/en/packages/org.fdroid.fdroid/
