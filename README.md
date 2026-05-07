@@ -6,12 +6,11 @@ This version establishes a secure, unified MCP (Model Context Protocol) bridge s
 For devs utilizing this project as a platform to develop Agents on Android:
 [Roadmap](./Docs/Roadmap.md)
 
-​**Repository:** 
-Main:
-[github.com/p1m37aradox/SynapseBridge](https://github.com/p1m37aradox/SynapseBridge)
+Main repo:
+[SynapseBridge](https://github.com/p1m37aradox/SynapseBridge)
 
 Gemini repo:
-[https://github.com/p1m37aradox/SynapseBridge/tree/gemini.active](https://github.com/p1m37aradox/SynapseBridge/tree/gemini-active)
+[SynapseBridge-gemini.active](https://github.com/p1m37aradox/SynapseBridge/tree/gemini-active)
 
 > ### ⚠️ CAUTION: PREREQUISITE KNOWLEDGE
 > This is an **Expert-Level** deployment. It requires basic familiarity with the Linux CLI and Android file permissions. **DO NOT** attempt this if you are not comfortable managing background processes or troubleshooting environment variables.
