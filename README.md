@@ -3,10 +3,12 @@ PASTE AS IS INTO A NEW LLM PROMPT
 ### 🌉 Synapse Bridge v0.0.4.1b-GeminiCLI
 This version establishes a secure, unified MCP (Model Context Protocol) bridge specifically optimized for the Gemini CLI. It provides the Gemini Agent with low-latency access to the Android filesystem, hardware APIs, and an embedded memory engine.
 
-​Repository: https://github.com/p1m37aradox/SynapseBridge/tree/gemini-active
-if your looking for the main repo:
-https://github.com/p1m37aradox/SynapseBridge
+​**Repository:** 
+Main:
+[github.com/p1m37aradox/SynapseBridge](https://github.com/p1m37aradox/SynapseBridge)
 
+Gemini repo:
+[https://github.com/p1m37aradox/SynapseBridge/tree/gemini.active](https://github.com/p1m37aradox/SynapseBridge/tree/gemini-active)
 
 > ### ⚠️ CAUTION: PREREQUISITE KNOWLEDGE
 > This is an **Expert-Level** deployment. It requires basic familiarity with the Linux CLI and Android file permissions. **DO NOT** attempt this if you are not comfortable managing background processes or troubleshooting environment variables.
