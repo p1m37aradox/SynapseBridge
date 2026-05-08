@@ -34,3 +34,4 @@ EOM
         exit 1
         ;;
 esac
+alias g-gemcli='cd ~/storage/shared/SynapseBridge && git checkout geminiCLI'
