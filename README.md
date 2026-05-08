@@ -53,7 +53,7 @@ curl -s https://pinggy.io/install.sh | sh
 # 2. Clone and Establish The Master Weld
 # This block establishes the 'synapse' (UI) and 'sb-deb' (Login) commands
 mkdir -p ~/storage/shared/SynapseBridge
-git clone https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
+git clone -b gemini-active https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
 
 SYNAPSE_BLOCK=$(cat << 'EOF'
 # >>> SYNAPSE BRIDGE START >>>
