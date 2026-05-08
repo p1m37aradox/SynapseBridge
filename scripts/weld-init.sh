@@ -11,7 +11,7 @@ case "$1" in
 # <SYNAPSE-BRIDGE-HOST>
 alias synapse='proot-distro login debian --bind \$HOME/storage/shared/SynapseBridge:/mnt/SynapseBridge'
 alias synapse-ui='bash \$HOME/storage/shared/SynapseBridge/scripts/UI_main.sh'
-alias g-gem='cd \$HOME/storage/shared/SynapseBridge && git checkout gemini-active'
+alias g-gem='cd \$HOME/storage/shared/SynapseBridge && git checkout geminiCLI'
 alias g-main='cd \$HOME/storage/shared/SynapseBridge && git checkout main'
 # </SYNAPSE-BRIDGE-HOST>
 EOM

@@ -12,7 +12,7 @@ Main repo:
 [SynapseBridge](https://github.com/p1m37aradox/SynapseBridge)
 
 Gemini repo:
-[SynapseBridge-gemini.active](https://github.com/p1m37aradox/SynapseBridge/tree/gemini-active)
+[SynapseBridge-gemini.active](https://github.com/p1m37aradox/SynapseBridge/tree/geminiCLI)
 
 > ### ⚠️ CAUTION: PREREQUISITE KNOWLEDGE
 > This is an **Expert-Level** deployment. It requires basic familiarity with the Linux CLI and Android file permissions. **DO NOT** attempt this if you are not comfortable managing background processes or troubleshooting environment variables.
