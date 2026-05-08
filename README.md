@@ -37,11 +37,19 @@ Gemini repo:
 ### 🟢 Step 1: Host Preparation (Termux)
 Run these blocks first to prepare the Android environment, install the tunnel, and establish the shared directory.
 ```bash
-# Update and install core Termux utilities
-pkg update && pkg upgrade -y
+# 1. Immediate Mirror Reset
+# This forces Termux to use the main global mirror instead of a broken local one
+sed -i 's|https://dl.astral.sh/termux-main|https://deb.debian.org/termux/termux-main|g' $PREFIX/etc/apt/sources.list
+pkg update -y
+
+# 2. Core Utility & Manager Install
+# Now that mirrors are fixed, we can safely pull proot-distro
 pkg install termux-api proot-distro tmux python openssh wget curl git nodejs -y
+
+# 3. Environment Lock & Permissions
 termux-wake-lock
 termux-setup-storage
+
 
 ```
 Wait for the Android popup and click "Allow" before moving to the next block.
