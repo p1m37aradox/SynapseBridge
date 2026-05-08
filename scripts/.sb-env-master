@@ -1,0 +1,15 @@
+# --- SynapseBridge Master Alias File ---
+
+# Environment
+alias sb-venv-activate='source ~/SynapseBridge_Root/venv/bin/activate'
+
+# Logic Commands
+alias sb-mcp='mempalace-mcp'
+alias sb-mine='mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"'
+
+# Navigation
+alias cd-bridge='cd /mnt/SynapseBridge'
+alias g-status='cd ~/storage/shared/SynapseBridge && git status'
+alias g-pull='cd ~/storage/shared/SynapseBridge && git pull origin gemini-active'
+
+echo "🌉 Synapse Environment: ONLINE"

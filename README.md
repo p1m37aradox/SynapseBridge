@@ -1,6 +1,6 @@
 PASTE AS IS INTO A ANDROID LLM PROMPT
 
-### 🌉 Synapse Bridge v0.0.4.1b-GeminiCLI
+### 🌉 Synapse Bridge v0.0.5.0b-GeminiCLI
 This version establishes a secure, unified MCP (Model Context Protocol) bridge specifically optimized for the Gemini CLI. It provides the Gemini Agent with low-latency access to the Android filesystem, hardware APIs, and an embedded memory engine.
 
 Tested with: Gemini, ChatGPT, Claude, Perplexity, Poe
@@ -20,9 +20,8 @@ Gemini repo:
 > ### 🔍 WHY SYNAPSE BRIDGE?
 > Traditional LLM interactions are trapped in a "Chat Box." Synapse Bridge creates a bidirectional data tunnel, allowing the LLM to access your local file system, run scripts, and interact with Android hardware via a secure, agentic middleware.
 > 
-### 🏗️ THE MONOLITHIC SYNTHESIS: v0.0.4.1b-GeminiCLI
-​v0.0.4.1b-GeminiCLI represents a unified Starlette + MCP server that embeds the Memory Palace directly into the middleware. By eliminating the need for a separate ChromaDB process, we’ve drastically reduced memory overhead on Android. This "Synthesis" build specifically optimizes the bridge for the Gemini CLI, enabling high-frequency host-to-guest execution without framework fatigue.
-[github.com/MemPalace/mempalace](https://github.com/MemPalace/mempalace)
+###​🏗️ THE MONOLITHIC SYNTHESIS: v0.0.5.0b-GeminiCLI
+​This version establishes a secure, unified MCP (Model Context Protocol) bridge optimized for Gemini. We have pivoted the architecture to a Master Weld system—one command to link the host, one command to launch the bridge.
 
 ### 🚀 Full Installation Guide
 ### Phase 0: Requirements & System Prep
@@ -51,29 +50,61 @@ Wait for the Android popup and click "Allow" before moving to the next block.
 # Install Pinggy (The Gateway)
 curl -s https://pinggy.io/install.sh | sh
 
-# Clone the distribution
+# 2. Clone and Establish The Master Weld
+# This block establishes the 'synapse' (UI) and 'sb-deb' (Login) commands
 mkdir -p ~/storage/shared/SynapseBridge
 git clone https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
 
-# Install Debian and establish the synapse alias
+SYNAPSE_BLOCK=$(cat << 'EOF'
+# >>> SYNAPSE BRIDGE START >>>
+alias sb-init='source ~/storage/shared/SynapseBridge/scripts/.sb-env-master'
+alias synapse='sb-init && bash ~/storage/shared/SynapseBridge/scripts/UI_main.sh'
+alias sb-ui='synapse'
+alias sb-deb='proot-distro login debian --bind $HOME/storage/shared/SynapseBridge:/mnt/SynapseBridge'
+# <<< SYNAPSE BRIDGE END <<<
+EOF
+)
+
+if grep -q "SYNAPSE BRIDGE START" ~/.bashrc; then
+    sed -i '/# >>> SYNAPSE BRIDGE START >>>/,/# <<< SYNAPSE BRIDGE END <<</d' ~/.bashrc
+fi
+echo "$SYNAPSE_BLOCK" >> ~/.bashrc && source ~/.bashrc
+
+# 3. Create Master Alias File
+mkdir -p ~/storage/shared/SynapseBridge/scripts
+cat << 'EOF' > ~/storage/shared/SynapseBridge/scripts/.sb-env-master
+alias sb-venv-activate='source ~/SynapseBridge_Root/venv/bin/activate'
+alias sb-mcp='mempalace-mcp'
+alias cd-bridge='cd /mnt/SynapseBridge'
+alias g-status='cd ~/storage/shared/SynapseBridge && git status'
+alias g-pull='cd ~/storage/shared/SynapseBridge && git pull origin gemini-active'
+echo "🌉 Synapse Environment: ONLINE"
+EOF
+
 proot-distro install debian
-echo "alias synapse='proot-distro login debian --bind \$HOME/storage/shared/SynapseBridge:/mnt/SynapseBridge'" >> ~/.bashrc
-source ~/.bashrc
 
 ```
 ### 🔵 Step 2: Guest Environment Setup (Debian)
 Enter Debian environment and install build tools.
 ```bash
-synapse
-# Update Debian and install build tools, SQLite3, and Nano
-apt update && apt install -y build-essential curl git python3-full python3-venv nodejs npm sqlite3 nano
+# Enter Guest
+sb-deb
 
-# Install Rust & Cargo
+# Install build tools
+apt update && apt install -y build-essential curl git python3-full python3-venv nodejs npm sqlite3 nano
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source $HOME/.cargo/env
 
-# Install MCP Inspector globally
-npm install -g @modelcontextprotocol/inspector
+# Establish Guest-side loader
+echo "alias sb-init='source /mnt/SynapseBridge/scripts/.sb-env-master'" >> ~/.bashrc
+source ~/.bashrc
+
+# Setup Venv & Install Core
+cd ~ && mkdir -p SynapseBridge_Root && cd SynapseBridge_Root
+python3 -m venv venv
+sb-init && sb-venv-activate
+pip install --upgrade pip
+pip install maturin mempalace "mcp[cli]" starlette uvicorn
 
 ```
 ### 🟡 Step 3: Deploy Core Logic & "The Weld"
@@ -129,7 +160,7 @@ cat > /mnt/SynapseBridge/GEMINI.md <<EOF
 - Shared Zone: /mnt/SynapseBridge
 - Agent Storage: /mnt/SynapseBridge/GeminiGenerated
 - Ports: 8080 (Unified MCP), 443 (Pinggy Tunnel)
-- Execution: You are running in Termux Host with access to Debian via 'synapse'
+- Execution: You are running in Termux Host with access to Debian via 'sb-deb' you may need to use sb-init to pull Aliases from alias file if commands fail.
 - Rule: Always write logs/files to the GeminiGenerated/ directory.
 EOF
 
@@ -138,10 +169,10 @@ EOF
 Mine the palace
 ```bash
 # Enter environment if not already inside
-synapse 
+sb-deb 
 
 # Activate and index
-source ~/SynapseBridge_Root/venv/bin/activate
+sb-init
 mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 
 ```
@@ -169,15 +200,13 @@ tmux source-file ~/.tmux.conf 2>/dev/null
 
 # 2. Permissions & Alias (CORRECTED PATHS)
 chmod +x ~/storage/shared/SynapseBridge/scripts/UI_main.sh
-echo "alias synapse-ui='bash ~/storage/shared/SynapseBridge/scripts/UI_main.sh'" >> ~/.bashrc
-source ~/.bashrc
 
 ```
 *Launch the custom UI /To exit navigate to window 6 with the NEXT or PREV buttons and press ENTER. You can use this command as your start from now on.
 
 START
 ```bash
-synapse-ui
+synapse
 ```
 OR 
 
@@ -189,30 +218,35 @@ OR
 **Terminal 1: synapse-mempalace-mcp (MCP)**
 ```bash
 printf '\e]1;synapse-mempalace-mcp\a'
-synapse
-source ~/SynapseBridge_Root/venv/bin/activate
-mempalace-mcp
+sb-init
+sb-deb
+sb-init
+sb-venv-activate
+sb-mcp
 
 ```
 **Terminal 2: Pinggy (Verifies the loop)**
 You can choose the tunnel service of your choice if you want online LLM interaction.
 ```bash
 printf '\e]1;Pinggy\a'
-synapse
+sb-deb
+sb-init
 ssh -p 443 -R0:localhost:8080 qr@a.pinggy.io
 
 ```
 **Terminal 3: SB_Venv (Debian Logic)**
 ```bash
 printf '\e]1;SB_Venv\a'
-synapse
+sb-deb
+sb-init
 source ~/SynapseBridge_Root/venv/bin/activate
 
 ```
 **Terminal 4: Debian_CLI**
 ```bash
 printf '\e]1;Debian_CLI\a'
-synapse
+sb-deb
+sb-init
 cd /mnt/SynapseBridge
 
 ```
@@ -257,8 +291,15 @@ gemini
 #### **Essential Command Aliases**
 | Command | Action | Location |
 |---|---|---|
-| synapse | Enters the Debian environment with Shared storage mapped. | Termux Host |
-| exit | Leaves Debian and returns to the Termux prompt. | Debian Guest |
+| **synapse** | **Main Entry.** Launches the 7-pane tmux automation stack. | Termux Host |
+| **sb-deb** | Enters the Debian guest environment (Manual Login). | Termux Host |
+| **sb-init** | Loads project aliases and logic into the current shell. | Host & Guest |
+| **sb-venv-activate** | Activates the Python virtual environment. | Debian Guest |
+| **sb-mcp** | Manually starts the Unified MCP Server. | Debian Guest |
+| **g-status** | Quick check of the git repository status. | Host & Guest |
+| **exit** | Leaves Debian/Venv and returns to the previous prompt. | Debian Guest |
+
+
 **Commence Testing! GLHF**
 
 ### 🛑 LIABILITY & AGENTIC RISK
@@ -273,7 +314,7 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
 ### ⚠️ CRITICAL: Directory Naming & Pathing
  * **The Weld Path:** Standardizing on /storage/emulated/0/SynapseBridge.
  * **GPU Fault Tolerance:** Ignore onnxruntime GPU discovery errors.
-**Version:** 0.0.4.1-beta |
+**Version:** 0.0.5.0-beta |
 
 ## 💰 Support the Project
 * **One-Time Support:** [Support on Ko-fi](https://ko-fi.com/p1m37aradox)
