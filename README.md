@@ -34,8 +34,8 @@ Gemini repo:
 ### **Phase 1 & 2: Host Prep and System Build**
 *Launch Termux from your app drawer and run the following in Terminal 1.*
 
-### 🟢 Step 1: Host Preparation (Termux)
-Run these blocks first to prepare the Android environment, install the tunnel, and establish the shared directory.
+### 🟢 Step 1: Termux Prep and Debian Install:
+Run these blocks first to prepare the Android environment, install the tunnel, establish aliases, install the SynapseBridge repo and Debian.
 ```bash
 # 1. Immediate Mirror Reset
 # This forces Termux to use the main global mirror instead of a broken local one
@@ -99,8 +99,8 @@ EOF
 proot-distro install debian
 
 ```
-### 🔵 Step 2: Guest Environment Setup (Debian)
-Enter Debian environment and install build tools.
+### 🔵 Step 2: Guest (Debian) and Virtual Environment (venv) Setup
+Enter Debian to build guest environment and build tools, build venv, install; pip, Python3, maturin, mempalace, mcp[cli] starlette, uvicorn.
 ```bash
 # 1. Enter Guest and install build tools
 sb-deb
@@ -128,8 +128,8 @@ pip install maturin mempalace "mcp[cli]" starlette uvicorn --prefer-binary
 ```
 (You may have to hit enter to proceed)
 
-### 🟡 Step 3: Deploy Core Logic & "The Weld"
-Finally, run this block to set up your environment and initialize the Memory Palace.
+### 🟡 Step 3: SynapseBridge/MemPalace Android Compatibility Environment.
+Make dir tree and instruction set for MemPalace, then initiate MemPalace.
 ```bash
 # 1. Sanity Check: Ensure environment is locked
 sb-init && sb-venv-activate
@@ -154,11 +154,12 @@ cd /mnt/SynapseBridge
 mempalace init . --yes
 
 ```
-**IMPORTANT** 
-When asked to mine this dir now after mempalace init completes, press n + enter, we modify a file in the next step before we mine for compatibility.
-Our modification allows thebfile to be broadcast outside of thr protected root so it can be used via https tunnels etc...
+**IMPORTANT** Do Not Mine Yet:
+When asked to mine after mempalace init completes, press n + enter.
+We modify a file in the next step before we mine for Android compatibility.
+Our modification allows the MemPalace to be broadcast outside of the protected root (android data/data) so it can be used via local MCP and remote tunnels with/and/by the MCP. It won't cause a problem if you accidentally auto mined the dir.
 
-### 🟡 Step 4: Establish the Bridge Logic
+### 🟡 Step 4: Modify The MCP and MemPalace Logic
 ```bash
 export MEMPAL_DIR=$(python -c "import mempalace; print(mempalace.__path__[0])")
 cp "$MEMPAL_DIR/mcp_server.py" "$MEMPAL_DIR/mcp_server.backup"
@@ -171,7 +172,7 @@ echo "alias synapse-mempalace-mcp='mempalace-mcp'" >> ~/.bashrc
 source ~/.bashrc
 
 ```
-### 🟡 Step 5: Feed Gemini the "Map of the House"
+### 🟡 Step 5: Zones Gemini
 This ensures the Agent knows where to write and how to navigate.
 ```bash
 mkdir -p /mnt/SynapseBridge/GeminiGenerated
@@ -210,7 +211,7 @@ export GOOGLE_API_KEY="YOUR_KEY_HERE"
 🟡 User Interface (UI) options:
 Enables ability to navigate all 5 terminal sessions with simple NEXT and PREV buttons.
 
-You can use our custom tmux UI or run each individually. See the second image with instructions if you DO NOT want to use the custom UI.
+You can use our custom tmux UI or run each individually. See the second image with instructions if you DO NOT want to use our custom UI.
 
 *Note on custom UI, if you are already using a custom UI this may break it, This is for a fresh Termux install focused on the SynapseBridge.
 
@@ -233,7 +234,7 @@ tmux source-file ~/.tmux.conf 2>/dev/null
 chmod +x ~/storage/shared/SynapseBridge/scripts/UI_main.sh
 
 ```
-*Launch the custom UI /To exit navigate to window 6 with the NEXT or PREV buttons and press ENTER. You can use this command as your start from now on.
+*Launch the custom UI. To exit navigate to window 6 with the NEXT or PREV buttons and press ENTER. You can use this command as your start from now on.
 
 START
 ```bash
