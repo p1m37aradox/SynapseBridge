@@ -80,6 +80,7 @@ curl -s https://pinggy.io/install.sh | sh
 # Install the SynapseBridge repo
 sb-init && sb-deb
 git clone -b gemini-active https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
+
 #Grant Script Executable Permissions
 cd ~/storage/shared/SynapseBridge
 chmod +x scripts/*.sh
