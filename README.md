@@ -145,7 +145,13 @@ EOF
 cd /mnt/SynapseBridge
 mempalace init . --yes
 
-# 5. THE WELD: Establish the Bridge Logic
+```
+**IMPORTANT** 
+When asked to mine this dir now after mempalace init completes, press n + enter, we modify a file in the next step before we mine for compatibility.
+Our modification allows thebfile to be broadcast outside of thr protected root so it can be used via https tunnels etc...
+
+### 🟡 Step 4: Establish the Bridge Logic
+```bash
 export MEMPAL_DIR=$(python -c "import mempalace; print(mempalace.__path__[0])")
 cp "$MEMPAL_DIR/mcp_server.py" "$MEMPAL_DIR/mcp_server.backup"
 
@@ -157,7 +163,7 @@ echo "alias synapse-mempalace-mcp='mempalace-mcp'" >> ~/.bashrc
 source ~/.bashrc
 
 ```
-### 🟡 Step 4: Feed Gemini the "Map of the House"
+### 🟡 Step 5: Feed Gemini the "Map of the House"
 This ensures the Agent knows where to write and how to navigate.
 ```bash
 mkdir -p /mnt/SynapseBridge/GeminiGenerated
@@ -171,7 +177,7 @@ cat > /mnt/SynapseBridge/GEMINI.md <<EOF
 EOF
 
 ```
-### 🟡 Step 5: Populate the Memory
+### 🟡 Step 6: Populate the Memory
 Mine the palace
 ```bash
 # Enter environment if not already inside
@@ -191,7 +197,7 @@ You can use our custom tmux UI or run each individually. See the second image wi
 *Note on custom UI, if you are already using a custom UI this may break it, This is for a fresh Termux install focused on the SynapseBridge.
 
 **CUSTOM UI**
-<img src="Docs/Screenshot_20260507-070901.png" width="350" alt="Synapse Bridge UI">
+<img src="https://raw.githubusercontent.com/p1m37aradox/SynapseBridge/refs/heads/gemini-active/Docs/Screenshot_20260507-070901.png" width="350" alt="Synapse Bridge UI">
 
 *Run these commands in the root Termux terminal. If you're in the (venv) or Debian environment, type exit and press enter until you get to the root terminal prompt: ~$
 ```bash
@@ -219,7 +225,7 @@ OR
 **To run the full stack without custom UI, you must open **6 Termux sessions**. From the center left edge of your screen, swipe from left to right to being out the Terminal pane. Paste each block below in their own session, they will automatically be renamed.
 
 **Standard UI**
-<img src="Docs/Screenshot_20260507-073327.png" width="350" alt="Synapse Bridge UI2">
+<img src="https://raw.githubusercontent.com/p1m37aradox/SynapseBridge/refs/heads/gemini-active/Docs/Screenshot_20260507-073327.png" width="350" alt="Synapse Bridge UI2">
 
 **Terminal 1: synapse-mempalace-mcp (MCP)**
 ```bash
