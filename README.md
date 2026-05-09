@@ -322,6 +322,20 @@ gemini
 
 **Commence Testing! GLHF**
 
+### 🛠️ Troubleshooting & Health
+​Terminal Hanging / Keyboard Not Appearing
+​If a terminal window stops responding to input or the soft keyboard refuses to pop up:
+​Long-press anywhere inside the terminal area.
+​Select "More..." from the context menu.
+​Click "Reset".
+​This clears the terminal state and forces the input focus to reset without killing your active sessions.
+​Command Not Found (sb-init / synapse)
+​If your custom aliases aren't working after a fresh install:
+​Run source ~/.bashrc to refresh the environment's memory.
+​Dubious Ownership Error (Git)
+​If you see a "dubious ownership" error when pushing from the Debian environment:
+​Run: git config --global --add safe.directory /mnt/SynapseBridge
+
 ### 🛑 LIABILITY & AGENTIC RISK
 By using Synapse Bridge, you are granting an AI Agent the ability to execute code and modify files on your device.
  * **The "Break" Factor:** AI can and will follow instructions literally.
