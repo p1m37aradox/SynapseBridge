@@ -215,6 +215,7 @@ You can use our custom tmux UI or run each individually. See the second image wi
 *Note on custom UI, if you are already using a custom UI this may break it, This is for a fresh Termux install focused on the SynapseBridge.
 
 **CUSTOM UI**
+
 <img src="https://raw.githubusercontent.com/p1m37aradox/SynapseBridge/refs/heads/gemini-active/Docs/Screenshot_20260507-070901.png" width="350" alt="Synapse Bridge UI">
 
 *Run these commands in the root Termux terminal. If you're in the (venv) or Debian environment, type exit and press enter until you get to the root terminal prompt: ~$
@@ -243,6 +244,7 @@ OR
 **To run the full stack without custom UI, you must open **6 Termux sessions**. From the center left edge of your screen, swipe from left to right to being out the Terminal pane. Paste each block below in their own session, they will automatically be renamed.
 
 **Standard UI**
+
 <img src="https://raw.githubusercontent.com/p1m37aradox/SynapseBridge/refs/heads/gemini-active/Docs/Screenshot_20260507-073327.png" width="350" alt="Synapse Bridge UI2">
 
 **Terminal 1: synapse-mempalace-mcp (MCP)**
