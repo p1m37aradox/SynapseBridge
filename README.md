@@ -205,12 +205,6 @@ npm install -g @google/generative-ai-cli
 # 2. Set API Key
 export GOOGLE_API_KEY="YOUR_KEY_HERE"
 
-# 3. Activation Test
-gemini "Perform a Global Weld Verification:
-1. Read ~/storage/shared/SynapseBridge/GEMINI.md to confirm context.
-2. Check battery via 'termux-battery-status'.
-3. Log 'HOST_ACTIVATION_SUCCESS' to /sdcard/SynapseBridge/GeminiGenerated/GRAND_DECLARATION.txt."
-
 ```
 ### **Phase 3: Initialize**
 🟡 User Interface (UI) options:
