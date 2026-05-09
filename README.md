@@ -250,7 +250,6 @@ OR
 **Terminal 1: synapse-mempalace-mcp (MCP)**
 ```bash
 printf '\e]1;synapse-mempalace-mcp\a'
-sb-init
 sb-deb
 sb-init
 sb-venv-activate
