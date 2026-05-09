@@ -50,7 +50,6 @@ pkg install termux-api proot-distro tmux python openssh wget curl git nodejs -y
 termux-wake-lock
 termux-setup-storage
 
-
 ```
 Wait for the Android popup and click "Allow" before moving to the next block.
 (press y to confirm at prompts)
@@ -95,44 +94,43 @@ proot-distro install debian
 ### 🔵 Step 2: Guest Environment Setup (Debian)
 Enter Debian environment and install build tools.
 ```bash
-# Enter Guest
+# 1. Enter Guest and install build tools
 sb-deb
-
-# Install build tools
 apt update && apt install -y build-essential curl git python3-full python3-venv nodejs npm sqlite3 nano
+
+# 2. Install Rust 
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source $HOME/.cargo/env
 
-# Establish Guest-side loader
+# 3. Establish Guest-side loader
 echo "alias sb-init='source /mnt/SynapseBridge/scripts/.sb-env-master'" >> ~/.bashrc
 source ~/.bashrc
 
-# Setup Venv & Install Core
+# 4. Build the Venv & Install Core
 cd ~ && mkdir -p SynapseBridge_Root && cd SynapseBridge_Root
 python3 -m venv venv
+
+# 5. The "Double-Lock" Activation & Install
+# We source the venv directly AND pull aliases to ensure pip is safe
+source venv/bin/activate
 sb-init && sb-venv-activate
 pip install --upgrade pip
-pip install maturin mempalace "mcp[cli]" starlette uvicorn
+pip install maturin mempalace "mcp[cli]" starlette uvicorn --prefer-binary
 
 ```
+(You may have to hit enter to proceed)
+
 ### 🟡 Step 3: Deploy Core Logic & "The Weld"
 Finally, run this block to set up your environment and initialize the Memory Palace.
 ```bash
-# 1. Setup the isolated Python environment
-cd ~
-mkdir -p SynapseBridge_Root && cd SynapseBridge_Root
-python3 -m venv venv
-source venv/bin/activate
+# 1. Sanity Check: Ensure environment is locked
+sb-init && sb-venv-activate
 
-# 2. Install dependencies
-pip install --upgrade pip
-pip install maturin mempalace "mcp[cli]" starlette uvicorn
-
-# 3. INITIALIZE STORAGE
+# 2. Initialize Memory Storage
 mkdir -p /mnt/SynapseBridge/palace
 echo "[]" > /mnt/SynapseBridge/palace/entities.json
 
-# 4. THE WELD CONFIG
+# 3. The Weld Config
 mkdir -p ~/.mempalace
 cat > ~/.mempalace/config.json <<EOF
 {
@@ -143,15 +141,15 @@ cat > ~/.mempalace/config.json <<EOF
 }
 EOF
 
-# 5. Initialize MemPalace
+# 4. Finalize MemPalace
 cd /mnt/SynapseBridge
 mempalace init . --yes
 
-# 6. THE WELD: Swap the Core & Create Alias
+# 5. THE WELD: Establish the Bridge Logic
 export MEMPAL_DIR=$(python -c "import mempalace; print(mempalace.__path__[0])")
 cp "$MEMPAL_DIR/mcp_server.py" "$MEMPAL_DIR/mcp_server.backup"
 
-# Fix permissions and copy the bridge logic
+# Fix permissions and copy bridge logic
 chmod +x /mnt/SynapseBridge/.mcp_server.py
 cp /mnt/SynapseBridge/.mcp_server.py "$MEMPAL_DIR/mcp_server.py"
 
