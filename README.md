@@ -19,9 +19,6 @@ Gemini repo:
 > 
 > ### 🔍 WHY SYNAPSE BRIDGE?
 > Traditional LLM interactions are trapped in a "Chat Box." Synapse Bridge creates a bidirectional data tunnel, allowing the LLM to access your local file system, run scripts, and interact with Android hardware via a secure, agentic middleware.
-> 
-###​🏗️ THE MONOLITHIC SYNTHESIS: >0.0.5.0b-GeminiCLI
->This version establishes a secure, unified MCP (Model Context Protocol) bridge optimized for Gemini. We have pivoted the architecture to a Master Weld system—one command to link the host, one command to launch the bridge.
 
 ### 🚀 Full Installation Guide
 ### Phase 0: Requirements & System Prep
