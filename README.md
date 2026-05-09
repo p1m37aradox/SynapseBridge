@@ -196,6 +196,22 @@ sb-init
 mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 
 ```
+### 🟡 Step 7: Get Gemini API Key & Install CLI
+visit: https://ai.google.dev/gemini-api/docs/api-key
+```bash
+# 1. Install the Agent on the Host
+npm install -g @google/generative-ai-cli
+
+# 2. Set API Key
+export GOOGLE_API_KEY="YOUR_KEY_HERE"
+
+# 3. Activation Test
+gemini "Perform a Global Weld Verification:
+1. Read ~/storage/shared/SynapseBridge/GEMINI.md to confirm context.
+2. Check battery via 'termux-battery-status'.
+3. Log 'HOST_ACTIVATION_SUCCESS' to /sdcard/SynapseBridge/GeminiGenerated/GRAND_DECLARATION.txt."
+
+```
 ### **Phase 3: Initialize**
 🟡 User Interface (UI) options:
 Enables ability to navigate all 5 terminal sessions with simple NEXT and PREV buttons.
@@ -277,28 +293,15 @@ cd ~
 
 ```
 **Terminal 6: Gemini_CLI**
+https://ai.google.dev/gemini-api/docs/api-key
 ```bash
-# 1. Install the Agent on the Host
-npm install -g @google/generative-ai-cli
-
-# 2. Set API Key
-export GOOGLE_API_KEY="YOUR_KEY_HERE"
-
-# 3. Activation Test
-gemini "Perform a Global Weld Verification:
-1. Read ~/storage/shared/SynapseBridge/GEMINI.md to confirm context.
-2. Check battery via 'termux-battery-status'.
-3. Log 'HOST_ACTIVATION_SUCCESS' to /sdcard/SynapseBridge/GeminiGenerated/GRAND_DECLARATION.txt."
+gemini
 
 ```
 
 Standard UI- After initial install is complete, to restore environment:
 * re open 6 terminals
-* execute the first 5 bash commands in the terminals in order with the bash commands.
-* On the 6th terminal session:
-```bash
-gemini
-```
+* execute the bash commands in the terminals in order.
 
 **Important: Once initialized, share the status of Terminal 1 and the Pinggy URL from Terminal 2 with the LLM to establish the bridge.**
 
