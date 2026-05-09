@@ -53,14 +53,11 @@ termux-setup-storage
 ```
 Wait for the Android popup and click "Allow" before moving to the next block.
 (press y to confirm at prompts)
-```bash
-# Install Pinggy (The Gateway)
-curl -s https://pinggy.io/install.sh | sh
 
-# 2. Clone and Establish The Master Weld
+```bash
+# 1. Clone and Establish The Master Weld
 # This block establishes the 'synapse' (UI) and 'sb-deb' (Login) commands
 mkdir -p ~/storage/shared/SynapseBridge
-git clone -b gemini-active https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
 
 SYNAPSE_BLOCK=$(cat << 'EOF'
 # >>> SYNAPSE BRIDGE START >>>
@@ -77,7 +74,14 @@ if grep -q "SYNAPSE BRIDGE START" ~/.bashrc; then
 fi
 echo "$SYNAPSE_BLOCK" >> ~/.bashrc && source ~/.bashrc
 
-# 3. Create Master Alias File
+# Install Pinggy (The Gateway)
+curl -s https://pinggy.io/install.sh | sh
+
+# Install the SynapseBridge repo
+sb-init && sb-deb
+git clone -b gemini-active https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
+
+# 2. Create Master Alias File
 mkdir -p ~/storage/shared/SynapseBridge/scripts
 cat << 'EOF' > ~/storage/shared/SynapseBridge/scripts/.sb-env-master
 alias sb-venv-activate='source ~/SynapseBridge_Root/venv/bin/activate'
