@@ -1,121 +1,91 @@
+import os
+import sys
+import uvicorn
 from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
-from starlette.responses import HTMLResponse, JSONResponse
-from starlette.routing import Route, Mount
+from starlette.responses import HTMLResponse
+from starlette.routing import Route, Mount, Router
 from starlette.staticfiles import StaticFiles
-import os
-import uvicorn
 
-# --- THE BRAIN: Official MemPalace Imports ---
+# --- 1. CORE LOGIC IMPORT ---
 try:
-    from mempalace.searcher import search_memories
-    from mempalace.config import MempalaceConfig
-    MEMPAL_AVAILABLE = True
+    import mempalace.mcp_server as mempal_core
 except ImportError:
-    MEMPAL_AVAILABLE = False
+    print("❌ Critical: mempalace package not found. Run in venv.")
+    sys.exit(1)
 
-# --- CONFIGURATION ---
+# --- 2. CONFIGURATION ---
 ROOT_DIR = "/mnt/SynapseBridge"
-PALACE_PATH = os.path.join(ROOT_DIR, "palace")
-
-# Initialize MCP with the name that shows up in Gemini
 mcp = FastMCP("SynapseBridge")
 
-# --- TOOLS ---
+# --- 3. THE TOOL BRIDGE ---
+@mcp.tool()
+async def mempal_status():
+    """Total drawers and wing/room breakdown."""
+    return mempal_core.handle_request({"method": "mempalace_status", "params": {}})
+
+@mcp.tool()
+async def mempal_search(q: str, wing: str = None):
+    """Semantic search across the palace."""
+    return mempal_core.handle_request({"method": "mempalace_search", "params": {"q": q, "wing": wing}})
 
 @mcp.tool()
 async def check_mount():
     """Verify hardware access to the shared project zone."""
-    exists = os.path.exists(ROOT_DIR)
-    readable = os.access(ROOT_DIR, os.R_OK)
-    return {
-        "status": "ok" if (exists and readable) else "error",
-        "path": ROOT_DIR,
-        "files_sample": os.listdir(ROOT_DIR)[:5] if exists else []
-    }
+    return {"status": "ok" if os.path.exists(ROOT_DIR) else "error", "path": ROOT_DIR}
 
-@mcp.tool()
-async def query_memory(q: str, wing: str = "SynapseBridge-Main"):
-    """
-    Search the MemPalace semantic database.
-    Use this to recall past technical decisions, audit logs, or project history.
-    """
-    if not MEMPAL_AVAILABLE:
-        return {"error": "MemPalace library not found in venv."}
-    
-    try:
-        # Direct call to the official MemPalace search logic
-        results = search_memories(
-            query=q,
-            palace_path=PALACE_PATH,
-            wing=wing,
-            n_results=5,
-            max_distance=1.5 
-        )
-        return results
-    except Exception as e:
-        return {"error": str(e), "hint": "Ensure 'mempalace mine' has been run on this path."}
+# --- 4. THE PATH-SLICER MIDDLEWARE (v0.0.5.9.1) 
+mcp_app = mcp.sse_app()
 
-# --- WEB INTERFACE (The Dashboard) ---
+class MCPPathFixMiddleware:
+    def __init__(self, app):
+        self.app = app
 
-async def serve_ui(request):
-    html = """
-    <html>
-    <head>
-        <title>Synapse Bridge Node</title>
-        <style>
-            body { font-family: 'Courier New', monospace; background: #0f0f0f; color: #00ff41; padding: 20px; }
-            a { color: #00ff41; text-decoration: none; border-bottom: 1px dashed; }
-            .folder { color: #ffff00; font-weight: bold; margin-top: 10px; }
-            .status { color: #00ff41; font-weight: bold; }
-        </style>
-    </head>
-    <body>
-        <h1>🌉 SYNAPSE BRIDGE NODE v0.0.3.1b</h1>
-        <p>System Status: <span class="status">ONLINE</span></p>
-        <p>Memory Engine: """ + ("OFFICIAL" if MEMPAL_AVAILABLE else "EMULATED") + """</p>
-        <hr>
-        <div id="file-browser">
-    """
-    
-    for root, dirs, files in os.walk(ROOT_DIR):
-        dirs[:] = [d for d in dirs if not d.startswith('.')] # Hide junk
-        rel_path = os.path.relpath(root, ROOT_DIR)
-        display_path = "ROOT" if rel_path == "." else rel_path
-        
-        if rel_path != ".":
-            html += f"<div class='folder'>📂 {display_path}/</div>"
+    async def __call__(self, scope, receive, send):
+        if scope["type"] == "http":
+            new_scope = dict(scope)
+            # Kill the root_path to prevent the /sse/sse recursion
+            new_scope["root_path"] = ""
             
-        for file in sorted(files):
-            if file.startswith('.') or file == "index.html": continue
-            path_prefix = "" if rel_path == "." else rel_path + "/"
-            html += f"<div>&nbsp;&nbsp;&nbsp;📄 <a href='/files/{path_prefix}{file}'>{file}</a></div>"
+            # If the SDK sends /sse/sse, we slice it back to /sse
+            if scope["path"] == "/sse/sse":
+                new_scope["path"] = "/sse"
+            
+            await self.app(new_scope, receive, send)
+        else:
+            await self.app(scope, receive, send)
 
-    html += "</div></body></html>"
-    return HTMLResponse(content=html)
+mcp_fixed_app = MCPPathFixMiddleware(mcp_app)
 
-# --- SYSTEM ENDPOINTS ---
-
-async def health(request):
-    return JSONResponse({"status": "active", "mempalace": MEMPAL_AVAILABLE})
-
-# --- APP ASSEMBLY ---
-
-app = Starlette(
+# --- 5. THE CLEAN ROUTER (v0.0.5.9.2 - Session Matcher) ---
+router = Router(
     routes=[
-        Route("/", serve_ui),
-        Route("/health", health),
-        Mount("/sse", mcp.sse_app()), # This is the "Tunnel" entrance
-        Mount("/files", app=StaticFiles(directory=ROOT_DIR), name="static"),
-    ]
+        # Route handles the initial GET/HEAD handshake
+        Route("/sse", endpoint=mcp_fixed_app, methods=["GET", "POST", "HEAD"]),
+        
+        # Mount /messages to catch EVERYTHING after it (like /messages/ or ?session_id=...)
+        # This is the secret sauce for the POST communication channel
+        Mount("/messages", app=mcp_fixed_app),
+        
+        Route("/", lambda r: HTMLResponse("<h1>Synapse Bridge v0.0.5.9.2</h1>"), methods=["GET", "HEAD"]),
+        Mount("/files", StaticFiles(directory=ROOT_DIR), name="static"),
+    ],
+    redirect_slashes=False 
 )
 
-# --- ENTRY POINT ---
+app = Starlette()
+app.mount("/", router)
 
+# --- 6. EXECUTION ---
 def main():
-    """The entry point for the mempalace-mcp system command."""
-    print(f"🚀 Synapse Bridge: Welding {ROOT_DIR} to Gemini...")
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    os.system("fuser -k 8080/tcp > /dev/null 2>&1")
+    
+    print("🚀 UNIFIED BRIDGE ONLINE (v0.0.5.8.1 - Iron Weld)")
+    print("  -> Handshake: http://127.0.0.1:8080/sse")
+    print("  -> Mailbox:   http://127.0.0.1:8080/messages")
+    print("  -> Files:     http://127.0.0.1:8080/files")
+    
+    uvicorn.run(app, host="0.0.0.0", port=8080, log_level="info")
 
 if __name__ == "__main__":
     main()

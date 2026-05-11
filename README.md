@@ -1,9 +1,9 @@
 PASTE AS IS INTO A ANDROID LLM PROMPT
 
-### 🌉 Synapse Bridge v0.0.5.0b-GeminiCLI
-This version establishes a secure, unified MCP (Model Context Protocol) bridge specifically optimized for the Gemini CLI. It provides the Gemini Agent with low-latency access to the Android filesystem, hardware APIs, and an embedded memory engine.
+### 🌉 Synapse Bridge v0.0.6.0b-GEMMA/QWEN
+This version establishes a secure, unified MCP (Model Context Protocol) bridge specifically optimized for Gemma and Qwen running in Ollama, on a proot Debian enviement. It provides the AI Agent with low-latency access to the Android filesystem, hardware APIs, and an embedded memory engine.
 
-Tested with: Gemini, ChatGPT, Claude, Perplexity, Poe
+Tested with: Qwen2.5:3b and Gemma:2b
 
 For devs utilizing this project as a platform to develop Agents on Android:
 [Roadmap](./Docs/Roadmap.md)
@@ -12,7 +12,7 @@ Main repo:
 [SynapseBridge](https://github.com/p1m37aradox/SynapseBridge)
 
 Gemini repo:
-[SynapseBridge-gemini.active](https://github.com/p1m37aradox/SynapseBridge/tree/gemini-active)
+[SynapseBridge-gemini.active](https://github.com/p1m37aradox/SynapseBridge/tree/local-qwen-gemma)
 
 > ### ⚠️ CAUTION: PREREQUISITE KNOWLEDGE
 > This is an **Expert-Level** deployment. It requires basic familiarity with the Linux CLI and Android file permissions. **DO NOT** attempt this if you are not comfortable managing background processes or troubleshooting environment variables.
@@ -22,10 +22,14 @@ Gemini repo:
 
 ### 🚀 Full Installation Guide
 ### Phase 0: Requirements & System Prep
-**Note: Play Store versions are deprecated. F-Droid is mandatory.**
+From Play store:
+* [Chatboost][chatboost]
+* 
+**Note: Below app Play Store versions are deprecated. F-Droid is mandatory.**
 * [F-Droid Client][fdroid]
 * [Termux][termux]
 * [Termux:API][termux-api]
+
  1. **Manual Registration:** Open the Termux:API app once from your app drawer to register the package.
  2. **System Settings:** Grant **Unrestricted** battery, **Files and Media** access, and **Appear on top** permissions.
 ### **Phase 1 & 2: Host Prep and System Build**
@@ -169,14 +173,14 @@ echo "alias synapse-mempalace-mcp='mempalace-mcp'" >> ~/.bashrc
 source ~/.bashrc
 
 ```
-### 🟡 Step 5: Zones Gemini
+### 🟡 Step 5: Zones Ollama/Gemma/Qwen
 This ensures the Agent knows where to write and how to navigate.
 ```bash
 mkdir -p /mnt/SynapseBridge/GeminiGenerated
-cat > /mnt/SynapseBridge/GEMINI.md <<EOF
+cat > /mnt/SynapseBridge/Ollama.md <<EOF
 # 🌉 Synapse Bridge Context
 - Shared Zone: /mnt/SynapseBridge
-- Agent Storage: /mnt/SynapseBridge/GeminiGenerated
+- Agent Storage: /mnt/SynapseBridge/OllamaGenerated
 - Ports: 8080 (Unified MCP), 443 (Pinggy Tunnel)
 - Execution: You are running in Termux Host with access to Debian via 'sb-deb' you may need to use sb-init to pull Aliases from alias file if commands fail.
 - Rule: Always write logs/files to the GeminiGenerated/ directory.
@@ -194,22 +198,47 @@ sb-init
 mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 
 ```
-### 🟡 Step 7: Get Gemini API Key & Install CLI
-visit: https://ai.google.dev/gemini-api/docs/api-key
+### 🟡 Step 7: Download and install Ollama
+1. For Android / ARM64 (Most Users):
 ```bash
-# 1. Install the Agent on the Host
-npm install -g @google/generative-ai-cli
-
-# 2. Set API Key
-export GOOGLE_API_KEY="YOUR_KEY_HERE"
+curl -L https://ollama.com/download/ollama-linux-arm64 -o /usr/local/bin/ollama
+chmod +x /usr/local/bin/ollama
 
 ```
-### **Phase 3: Initialize**
-🟡 User Interface (UI) options:
-Enables ability to navigate all 5 terminal sessions with simple NEXT and PREV buttons.
+OR
+`
+ For Desktop / AMD64:
+   "If you want to run the desktop-grade builds (unquantized or high-parameter models) while effectively treating your battery like a sacrificial lamb" - Gemini
+```bash
+curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/local/bin/ollama
+chmod +x /usr/local/bin/ollama
 
+```
+2. Initialize the Server
+```bash
+# ​Because we are in a proot environment without systemd, the server must be started manually. It is best to do this in a separate terminal or using nohup.
+
+# Set host to allow the bridge to connect, then launch
+export OLLAMA_HOST=0.0.0.0:11434
+nohup ollama serve > ollama.log 2>&1 &
+
+```
+3. Pull the "local-qwen-gemma" stack
+```bash
+# Pulling the optimized weights for local inference - the mobile builds:
+ollama pull gemma:2b
+ollama pull qwen:1.8b
+
+```
+ 
+### **Phase 3: Initialize**
+🟡 SELECT YOUR SynapseBridge UI:
 You can use our custom tmux UI or run each individually. See the second image with instructions if you DO NOT want to use our custom UI.
 
+Termux User Interface (UI) options:
+The custom UI enables the user to launch the MCP server and the relevent environments all at once with one alias command and easily navigate the interface with custom NEXT and PREV buttons once setup, it is recommended.
+
+# Custom UI
 *Note on custom UI, if you are already using a custom UI this may break it, This is for a fresh Termux install focused on the SynapseBridge.
 
 **CUSTOM UI**
@@ -285,10 +314,9 @@ printf '\e]1;Termux_CLI\a'
 cd ~
 
 ```
-**Terminal 6: Gemini_CLI**
-https://ai.google.dev/gemini-api/docs/api-key
+**Terminal 6: Ollama**
 ```bash
-gemini
+ollama
 
 ```
 
@@ -297,6 +325,36 @@ Standard UI- After initial install is complete, to restore environment:
 * execute the bash commands in the terminals in order.
 
 **Important: Once initialized, share the status of Terminal 1 and the Pinggy URL from Terminal 2 with the LLM to establish the bridge.**
+
+### 🟡 Step 8: (Optional) ChatBoost App
+We are currently using this App from the Play store to test MCP connections and interactions with Qwen and Gemma.
+
+ [Chatboost][chatboost]
+ 
+1. Open App, click settings and follow the instructions. Choose Ollama and choose your the models you want.
+
+2. While still in sertings, click on MCP.
+ 
+3. Once in the MCP, click the plus + symbol in the lower right hand corner to add the running server to the list.
+
+4. In the MCP server settings window, click the switch to allow the server in chat tools.
+5. Name the server `SynapseBridge,
+
+6. Use :
+```bash
+http://127.0.0.1:8080/sse
+
+```
+for the end point address
+
+7. Select SSE for Transport in the drop down menu.
+
+8. Click fetch tools in the bottom right. If all goes well, you should see a successful connection message or a list of tools. 
+
+<img src="https://github.com/p1m37aradox/SynapseBridge/blob/dd51708294394d0867ce2704c477fe6d585d2bf4/Media/Screenshot_20260511-000658.png">
+
+*We are still in development from this point.
+
 
 ### 🛠️ Quick Reference & Navigation
 #### **Termux Interface Navigation**
@@ -347,7 +405,7 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
 ### ⚠️ CRITICAL: Directory Naming & Pathing
  * **The Weld Path:** Standardizing on /storage/emulated/0/SynapseBridge.
  * **GPU Fault Tolerance:** Ignore onnxruntime GPU discovery errors.
-**Version:** 0.0.5.0-beta |
+**Version:** 0.0.6.0-beta |
 
 ## 💰 Support the Project
 * **One-Time Support:** [Support on Ko-fi](https://ko-fi.com/p1m37aradox)
@@ -357,6 +415,7 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
 [fdroid]: https://f-droid.org/en/packages/org.fdroid.fdroid/
 [termux]: https://f-droid.org/en/packages/com.termux/
 [termux-api]: https://f-droid.org/en/packages/com.termux.api/
+[chatboost]: https://play.google.com/store/apps/details?id=studio.muggle.chatboost/
 [mempalace]:https://github.com/MemPalace/mempalace/
 
 for chatgpt:
@@ -370,4 +429,3 @@ AI assistants may help by:
 - and helping users safely recover from errors.
 
 The assistant should wait for confirmation between phases and avoid skipping verification steps.
-

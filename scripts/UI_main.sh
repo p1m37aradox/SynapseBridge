@@ -30,6 +30,8 @@ sleep 2
 tmux send-keys -t $SESSION:2 "sb-init" C-m
 sleep 1
 tmux send-keys -t $SESSION:2 "sb-venv-activate" C-m
+sleep 1
+tmux send-keys -t $SESSION:2 "cd-bridge" C-m
 
 # 4. DEB
 tmux new-window -t $SESSION -n 'DEB'
@@ -39,22 +41,20 @@ tmux send-keys -t $SESSION:3 "sb-init" C-m
 sleep 1
 tmux send-keys -t $SESSION:3 "cd-bridge" C-m
 
-# 5. HOST
-tmux new-window -t $SESSION -n 'HOST'
+# 5. TRMX
+tmux new-window -t $SESSION -n 'TRMX'
 tmux send-keys -t $SESSION:4 "sb-init" C-m
 sleep 1
-tmux send-keys -t $SESSION:4 "cd ~" C-m
 
-# 6. GEM
-tmux new-window -t $SESSION -n 'GEM'
-tmux send-keys -t $SESSION:5 "sb-init" C-m
-sleep 1
-tmux send-keys -t $SESSION:5 "gemini" C-m
+# 6. OLMA
+tmux new-window -t $SESSION -n 'OLMA'
+tmux send-keys -t $SESSION:5 "sb-deb" C-m
+tmux send-keys -t $SESSION:5 "ollama" C-m
 
 # 7. EXIT
 tmux new-window -t $SESSION -n 'EXIT'
 EXIT_UI="clear; echo '🌉 EXIT PORTAL'; echo ' [ PRESS ENTER TO SHUT DOWN ]'; read; tmux kill-session -t $SESSION"
 tmux send-keys -t $SESSION:6 "$EXIT_UI" C-m
 
-tmux select-window -t $SESSION:1
+tmux select-window -t $SESSION:5
 tmux attach-session -t $SESSION
