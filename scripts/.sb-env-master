@@ -1,46 +1,48 @@
-# --- SynapseBridge Master Alias File (v0.0.5) ---
+# --- SynapseBridge Master Alias File (v0.0.6.2b) ---
 
 # 1. Environment & Paths
-# Using absolute paths for proot stability
 export SB_VENV_PATH='/root/SynapseBridge_Root/venv/bin'
 export SB_PALACE='/mnt/SynapseBridge/palace'
 export SB_AI_OUT='/mnt/SynapseBridge/OllamaGenerated'
+
+# --- THE PERMISSION WELD ---
+# This ensures that every time the environment is initialized, 
+# the logic scripts are granted execution rights automatically.
+if [ -d "/mnt/SynapseBridge/scripts" ]; then
+    chmod +x /mnt/SynapseBridge/scripts/*.sh 2>/dev/null
+fi
 
 # 2. Navigation & Git
 alias sb-venv-activate='source /root/SynapseBridge_Root/venv/bin/activate'
 alias cd-bridge='cd /mnt/SynapseBridge'
 alias g-status='cd /mnt/SynapseBridge && git status'
-alias g-pull='cd /mnt/SynapseBridge && git pull origin gemini-active'
+alias g-pull='cd /mnt/SynapseBridge && git pull origin local-qwen-gemma'
 
 # 3. Memory & Logic (MemPalace / MCP)
-alias sb-mcp='$SB_VENV_PATH/mempalace-mcp --palace $SB_PALACE'
+alias sb-mcp='python3 /root/SynapseBridge_Root/.synapse_mcp.py'
 alias sb-mine='$SB_VENV_PATH/mempalace --palace $SB_PALACE mine /mnt/SynapseBridge --wing "SynapseBridge-Main"'
 alias sb-wake='$SB_VENV_PATH/mempalace wake-up'
+alias sb-chat='python3 /mnt/SynapseBridge/scripts/client_bridge.py'
+
 
 # 4. Local AI (Ollama)
-alias sb-ollama='ollama serve > /dev/null 2>&1 &'
+alias sb-ollama='export OLLAMA_HOST=0.0.0.0:11434 && nohup ollama serve > /mnt/SynapseBridge/ollama.log 2>&1 &'
 alias sb-models='ollama list'
 alias sb-coder='ollama run qwen2.5:3b'
 alias sb-gemma='ollama run gemma:2b'
-alias sb-ai-flush='ollama gc && pkill ollama'
+alias sb-ai-flush='ollama gc && pkill -9 ollama'
 
 # 5. Bridge Communication & UI
-alias sb-notify='bash /mnt/SynapseBridge/scripts/sb-notify.sh'
-alias sb-clip='bash /mnt/SynapseBridge/scripts/sb-clip.sh'
+alias sb-notify='/mnt/SynapseBridge/scripts/sb-notify.sh'
+alias sb-clip='/mnt/SynapseBridge/scripts/sb-clip.sh'
+alias sb-exit='/mnt/SynapseBridge/scripts/exit.sh'
 
 # 6. Launch Command
-# Note: Use this while in Termux to bridge into the Debian environment
 alias synapse='proot-distro login debian --bind ~/storage/shared/SynapseBridge:/mnt/SynapseBridge -- bash /mnt/SynapseBridge/scripts/UI_main.sh'
 
 # --- Logic Gate: Directory Protection ---
-# This prevents 'Permission Denied' errors when sourcing in Termux 
-# by checking if the mount point exists before attempting mkdir.
 if [ -d "/mnt/SynapseBridge" ]; then
     mkdir -p "$SB_AI_OUT"
-else
-    # Fallback for Termux-side sourcing if needed
-    # mkdir -p ~/storage/shared/SynapseBridge/OllamaGenerated 2>/dev/null
-    :
 fi
 
-echo "🌉 Synapse Environment: ONLINE (v0.0.5-AI-Memory)"
+echo "🌉 Synapse Environment: ONLINE (v0.0.6-local-qwen-gemma)"

@@ -8,6 +8,7 @@ palace/db/
 
 # Synapse Bridge Personal Exclusions
 junk_drawer/
+sceipts/junk_drawer
 palace/
 OllamaGenerated/
 GeminiGenerated/
