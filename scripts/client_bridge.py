@@ -19,19 +19,17 @@ logging.basicConfig(
     format="%(asctime)s | %(message)s",
     handlers=[
         logging.FileHandler(CLIENT_LOG_FILE),
-        logging.StreamHandler(sys.stdout) 
+        logging.StreamHandler(sys.stdout)
     ]
 )
 # To Reenable logging add a # infront of logging on the next line.
-logging.disable(logging.CRITICAL)
-
+##logging.disable(logging.CRITICAL)
 
 logger = logging.getLogger("SynapseClient")
 
 def log_interaction(role, content):
     logger.info(f"[{role.upper()}]: {content}")
-    
-    
+
 # --- 2. CONFIGURATION ---
 SERVER_URL = "http://127.0.0.1:8080/sse"
 MODEL = "qwen2.5:3b" 
@@ -45,6 +43,7 @@ async def main():
         async with ClientSession(streams[0], streams[1]) as session:
             await session.initialize()
             
+            # --- Tool Discovery ---
             tools_data = await session.list_tools()
             ollama_tools = []
             server_tool_names = [tool.name for tool in tools_data.tools]
@@ -63,48 +62,46 @@ async def main():
 
             while True:
                 user_input = input("\n[Synapse User] > ")
-                if user_input.lower() in ['exit', 'quit']: break
+                if user_input.lower() in ['exit', 'quit']: 
+                    break
+                
                 log_interaction("User", user_input)
-
+                
+                # Fetch fresh context
                 if os.path.exists(CONTEXT_PATH):
                     with open(CONTEXT_PATH, 'r') as f:
                         system_context = f.read()
                 else:
-                    # FIXED: Added triple quotes for multi-line string
-                    system_context = """# MISSION
-You are the Synapse Bridge Agent. Your memory engine is MemPalace.
+                    system_context = "You are the Synapse Bridge Agent."
 
-# TOOL DISCOVERY PROTOCOL
-You have a limited set of registered tools.
-- SOURCE CODE: The full logic is at: /mnt/SynapseBridge/.mcp_server.py
-- ACTION: If you see a 'KnowledgeGraph' error, refer to the logic in .mcp_server.py to realize that drawer counts come from the collection, not the KG object.
+                # Initialize conversation history for this turn
+                messages = [
+                    {'role': 'system', 'content': system_context},
+                    {'role': 'user', 'content': user_input}
+                ]
 
-# MEMPALACE WAKE-UP
-1. Call mempalace_status.
-2. If it fails, use mempalace_search to find recent activity.
-3. Summarize findings.
-
-# OPERATIONAL CONSTRAINTS
-- Current Palace Path: /mnt/SynapseBridge/palace
-- System: Termux/Debian Proot"""
-
+                # Initial chat call
                 response = ollama.chat(
                     model=MODEL,
-                    messages=[
-                        {'role': 'system', 'content': system_context},
-                        {'role': 'user', 'content': user_input}
-                    ],
+                    messages=messages,
                     tools=ollama_tools,
+                    options={
+                        "num_ctx": 4096,     
+                        "temperature": 0.3,  
+                        "num_predict": 1024 
+                    }
                 )
 
                 message = response.get('message', {})
-                content = message.get('content', '')
                 tool_calls = message.get('tool_calls', [])
 
                 if tool_calls:
+                    messages.append(message) # Save Qwen's intent
+
                     for tool_call in tool_calls:
                         name = tool_call['function']['name']
                         
+                        # Fuzzy matching logic
                         if name not in server_tool_names:
                             if name.startswith('mempal_'):
                                 alt_name = name.replace('mempal_', 'mempalace_')
@@ -120,11 +117,31 @@ You have a limited set of registered tools.
                         
                         try:
                             result = await session.call_tool(name, clean_args)
-                            for item in result.content:
-                                log_interaction("Palace", item.text)
+                            tool_output_text = "\n".join([item.text for item in result.content if hasattr(item, 'text')])
+                            log_interaction("Palace", tool_output_text)
+
+                            messages.append({
+                                'role': 'tool',
+                                'content': tool_output_text,
+                                'name': name
+                            })
+
                         except Exception as e:
-                            log_interaction("Error", str(e))
+                            error_msg = str(e)
+                            log_interaction("Error", error_msg)
+                            messages.append({
+                                'role': 'tool',
+                                'content': f"Error: {error_msg}",
+                                'name': name
+                            })
+
+                    # Final summary call
+                    final_response = ollama.chat(model=MODEL, messages=messages)
+                    final_content = final_response.get('message', {}).get('content', '')
+                    if final_content:
+                        log_interaction("Qwen", final_content)
                 else:
+                    content = message.get('content', '')
                     if content:
                         log_interaction("Qwen", content)
 

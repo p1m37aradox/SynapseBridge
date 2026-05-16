@@ -6,10 +6,10 @@ export SB_PALACE='/mnt/SynapseBridge/palace'
 export SB_AI_OUT='/mnt/SynapseBridge/OllamaGenerated'
 
 # --- THE PERMISSION WELD ---
-# This ensures that every time the environment is initialized, 
+# This ensures that every time the environment is initialized,
 # the logic scripts are granted execution rights automatically.
 if [ -d "/mnt/SynapseBridge/scripts" ]; then
-    chmod +x /mnt/SynapseBridge/scripts/*.sh 2>/dev/null
+chmod +x /mnt/SynapseBridge/scripts/*.sh 2>/dev/null
 fi
 
 # 2. Navigation & Git
@@ -19,10 +19,13 @@ alias g-status='cd /mnt/SynapseBridge && git status'
 alias g-pull='cd /mnt/SynapseBridge && git pull origin local-qwen-gemma'
 
 # 3. Memory & Logic (MemPalace / MCP)
-alias sb-mcp='python3 /root/SynapseBridge_Root/.synapse_mcp.py'
+alias sb-mcp='python3 /root/SynapseBridge_Root/scripts/.synapse_mcp.py'
 alias sb-mine='$SB_VENV_PATH/mempalace --palace $SB_PALACE mine /mnt/SynapseBridge --wing "SynapseBridge-Main"'
 alias sb-wake='$SB_VENV_PATH/mempalace wake-up'
 alias sb-chat='python3 /mnt/SynapseBridge/scripts/client_bridge.py'
+
+#---------------TOOLS---------------
+alias sb-sync='cd-bridge && cp ./scripts/.synapse_mcp.py /root/SynapseBridge_Root/scripts/.synapse_mcp.py && echo \"✅ Root copy updated.\"' 
 
 
 # 4. Local AI (Ollama)
@@ -42,7 +45,7 @@ alias synapse='proot-distro login debian --bind ~/storage/shared/SynapseBridge:/
 
 # --- Logic Gate: Directory Protection ---
 if [ -d "/mnt/SynapseBridge" ]; then
-    mkdir -p "$SB_AI_OUT"
+mkdir -p "$SB_AI_OUT"
 fi
 
 echo "🌉 Synapse Environment: ONLINE (v0.0.6-local-qwen-gemma)"
