@@ -13,37 +13,84 @@ chmod +x /mnt/SynapseBridge/scripts/*.sh 2>/dev/null
 fi
 
 # 2. Navigation & Git
-alias sb-venv-activate='source /root/SynapseBridge_Root/venv/bin/activate'
-alias cd-bridge='cd /mnt/SynapseBridge'
-alias g-status='cd /mnt/SynapseBridge && git status'
-alias g-pull='cd /mnt/SynapseBridge && git pull origin local-qwen-gemma'
+
+    alias sb-venv-activate='source /root/SynapseBridge_Root/venv/bin/activate -- bash -c "source $HOME/storage/shared/SynapseBridge/scripts/.sb-env-master; exec bash"'
+    
+    alias cd-bridge='cd /mnt/SynapseBridge'
+    
+    alias cd-junk='cd /mnt/Junk'
+
+    alias g-status='cd /mnt/SynapseBridge && git status'
+
+    #alias g-pull='cd /mnt/SynapseBridge && git pull origin local-qwen-gemma'
 
 # 3. Memory & Logic (MemPalace / MCP)
-alias sb-mcp='python3 /root/SynapseBridge_Root/scripts/.synapse_mcp.py'
-alias sb-mine='$SB_VENV_PATH/mempalace --palace $SB_PALACE mine /mnt/SynapseBridge --wing "SynapseBridge-Main"'
-alias sb-wake='$SB_VENV_PATH/mempalace wake-up'
-alias sb-chat='python3 /mnt/SynapseBridge/scripts/client_bridge.py'
 
+    alias sb-mcp='python3 /root/SynapseBridge_Root/scripts/.synapse_mcp.py'
+    
+    alias sb-mine='$SB_VENV_PATH/mempalace --palace $SB_PALACE mine /mnt/SynapseBridge --wing "SynapseBridge-Main"'
+    
+    alias sb-wake='$SB_VENV_PATH/mempalace wake-up'
+    
+    alias sb-chat='python3 /mnt/SynapseBridge/scripts/client_bridge.py'
+    
 #---------------TOOLS---------------
-alias sb-sync='cd-bridge && cp ./scripts/.synapse_mcp.py /root/SynapseBridge_Root/scripts/.synapse_mcp.py && echo \"✅ Root copy updated.\"' 
+#Makes a shadow copy of .synapse_mcp and puts it in the root.
+
+    alias sb-sync='cd-bridge && cp ./scripts/.synapse_mcp.py /root/SynapseBridge_Root/scripts/.synapse_mcp.py && echo \"✅ Root copy updated.\"'
+    
+    
+# Makes a backup of default cli.py from mempalace distro
+
+    alias mempalace-cli-patch='cd && cd-bridge && chmod +x ./scripts/.cli_patch.py
+    python3 /mnt/SynapseBridge/scripts/.cli_patch.py'
+
+# Revert the CLI to its original state
+
+    alias bridge-restore='mv /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py.bak /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py'
+
 
 
 # 4. Local AI (Ollama)
-alias sb-ollama='export OLLAMA_HOST=0.0.0.0:11434 && nohup ollama serve > /mnt/SynapseBridge/ollama.log 2>&1 &'
-alias sb-models='ollama list'
-alias sb-coder='ollama run qwen2.5:3b'
-alias sb-gemma='ollama run gemma:2b'
-alias sb-ai-flush='ollama gc && pkill -9 ollama'
+
+    alias sb-ollama='export OLLAMA_HOST=0.0.0.0:11434 && nohup ollama serve > /mnt/SynapseBridge/ollama.log 2>&1 &'
+    
+    alias sb-models='ollama list'
+    
+    alias sb-coder='ollama run qwen2.5:3b'
+    
+    alias sb-gemma='ollama run gemma:2b'
+    
+    alias sb-ai-flush='ollama gc && pkill -9 ollama'
 
 # 5. Bridge Communication & UI
-alias sb-notify='/mnt/SynapseBridge/scripts/sb-notify.sh'
-alias sb-clip='/mnt/SynapseBridge/scripts/sb-clip.sh'
-alias sb-exit='/mnt/SynapseBridge/scripts/exit.sh'
+
+    #alias sb-notify='/mnt/SynapseBridge/scripts/sb-notify.sh'
+
+    #alias sb-clip='/mnt/SynapseBridge/scripts/sb-clip.sh'
 
 # 6. Launch Command
-alias synapse='proot-distro login debian --bind ~/storage/shared/SynapseBridge:/mnt/SynapseBridge -- bash /mnt/SynapseBridge/scripts/UI_main.sh'
+#Currently only in Termux .bashrc file @ root
+    ##alias synapse='proot-distro login debian --bind ~/storage/shared/SynapseBridge:/mnt/SynapseBridge -- bash /mnt/SynapseBridge/scripts/UI_main.sh'
+
+# Colors For You To Get Your Attention When You Launch The Launch Command From The Wrong Location.
+
+##='\e[m'
+
+GREEN='\e[1;32m'
+RED='\e[1;31m'
+YELLOW='\e[1;33m'
+BLUE='\e[1;34'
+MAGENTA='\e[1;35m'
+Cyan='\e[1;36m'
+NC='\e[0m' # No Color (Reset)
+
+# Use them easily
+echo -e "${GREEN}Scripts granted execution rights.${NC}"
+
 
 # --- Logic Gate: Directory Protection ---
+
 if [ -d "/mnt/SynapseBridge" ]; then
 mkdir -p "$SB_AI_OUT"
 fi

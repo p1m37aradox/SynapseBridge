@@ -22,7 +22,7 @@ logging.basicConfig(
         logging.StreamHandler(sys.stdout)
     ]
 )
-# To Reenable logging add a # infront of logging on the next line.
+# To Disable logging remove the # in front of logging on the next line.
 ##logging.disable(logging.CRITICAL)
 
 logger = logging.getLogger("SynapseClient")
@@ -32,6 +32,8 @@ def log_interaction(role, content):
 
 # --- 2. CONFIGURATION ---
 SERVER_URL = "http://127.0.0.1:8080/sse"
+
+####YOU MAY CHANGE THE MODEL HERE###
 MODEL = "qwen2.5:3b" 
 CONTEXT_PATH = "/mnt/SynapseBridge/scripts/context.txt"
 
@@ -115,11 +117,24 @@ async def main():
 
                         log_interaction("System", f"Executing Tool: {name}({clean_args})")
                         
+# ... (Imports and Setup remain same) ...
+
                         try:
                             result = await session.call_tool(name, clean_args)
-                            tool_output_text = "\n".join([item.text for item in result.content if hasattr(item, 'text')])
-                            log_interaction("Palace", tool_output_text)
+                            
+                            # 1. Extract the text (which the server has now formatted with [wing/room])
+                            tool_output_text = "\n".join(
+                                [item.text for item in result.content if hasattr(item, 'text')]
+                            )
+                            
+                            # 2. Log it specifically as a Palace interaction
+                            if tool_output_text:
+                                log_interaction("Palace", tool_output_text)
 
+                                context_injection = f"\n### CONTEXT FROM MEMORY ###\n{tool_output_text}\n"
+                                messages.append({"role": "system", "content": context_injection})
+                            
+                            # 4. Standard tool result reporting
                             messages.append({
                                 'role': 'tool',
                                 'content': tool_output_text,

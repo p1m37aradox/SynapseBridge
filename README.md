@@ -1,26 +1,9 @@
 PASTE AS IS INTO A ANDROID LLM PROMPT
 
 ### 🌉 Synapse Bridge v0.0.6.2b-GEMMA/QWEN
-This version establishes a secure, unified MCP (Model Context Protocol) bridge specifically optimized for Gemma and Qwen running in Ollama, on a proot Debian enviement. It provides the AI Agent with low-latency access to the Android filesystem, hardware APIs, and an embedded memory engine.
+This version establishes a secure, unified MCP (Model Context Protocol) bridge specifically optimized for Gemma and Qwen running in Ollama, on a proot Debian environment. It provides the AI Agent with low-latency access to the Android filesystem, hardware APIs, and an embedded memory engine.
 
-DEVELOPMENT BUILD 05-14-26: We are currently using a script to interact with the original 2334-line mempalace-mcp. We previously ran a stripped-down version/replacement of that file to achieve server stability.
-​We have updated the README instructions to retain the original file instead of replacing it outright to ensure the server remains operational. We utilize a dedicated server and client script architecture to accomplish this.
-​Current Status:
-​Model Compatibility: Successfully loaded MemPalace tools into qwen2.5:3b.
-​Known Issues: While mempalace_search is functional, we are currently resolving Knowledge Graph errors occurring during mempalace_status calls.
-​Updates: The repository will be updated as further milestones are reached.
-​Testing & Logs:
-​Refer to qwen_chat_history.log for recent test results.
-​Logging: Currently disabled for this build. To re-enable, add a # to the beginning of line 26 in client_bridge.py.
-​Roadmap:
-The main and gemini-cli repositories will be updated once the mempalace_mcp interactions and tool calls are stabilized in this environment.
-
-
-UPDATES:
-05-15-26
-​Shadow-Copy Execution: To maximize I/O performance and bypass FUSE permission bottlenecks, the MCP server is shadowed to /root/. The shared-zone version (/mnt/SynapseBridge/) remains the primary edit target for development, with sb-sync utilized to push updates to the high-velocity execution environment.
-
-Tested with: Qwen2.5:3b and Gemma:2b
+Testing with: Qwen2.5:3b and Gemma:2b
 
 For devs utilizing this project as a platform to develop Agents on Android:
 [Roadmap](./Docs/Roadmap.md)
@@ -71,16 +54,23 @@ Wait for the Android popup and click "Allow" before moving to the next block.
 (press y to confirm at prompts)
 
 ```bash
-# 1. Clone and Establish The Master Weld
-# This block establishes the 'synapse' (UI) and 'sb-deb' (Login) commands
+# This block establishes the Temrux Root (~$) 'synapse' (UI) and 'sb-deb' (Login) commands.
 mkdir -p ~/storage/shared/SynapseBridge
 
 SYNAPSE_BLOCK=$(cat << 'EOF'
-# >>> SYNAPSE BRIDGE START >>>
-alias sb-init='source ~/storage/shared/SynapseBridge/scripts/.sb-env-master'
+#>>> SYNAPSE BRIDGE START >>>
+
+alias reload='source ~/.bashrc'
+
+#SynapseBridge Master Alias File
+alias sb-init='source $HOME/storage/shared/SynapseBridge/scripts/.sb-env-master'
+
+#SynapseBridge Custom UI Launcher
 alias synapse='sb-init && bash ~/storage/shared/SynapseBridge/scripts/UI_main.sh'
-alias sb-ui='synapse'
+
+#Launch Debian Proot w/ Shared Local Storage
 alias sb-deb='proot-distro login debian --bind $HOME/storage/shared/SynapseBridge:/mnt/SynapseBridge'
+
 # <<< SYNAPSE BRIDGE END <<<
 EOF
 )
@@ -90,91 +80,96 @@ if grep -q "SYNAPSE BRIDGE START" ~/.bashrc; then
 fi
 echo "$SYNAPSE_BLOCK" >> ~/.bashrc && source ~/.bashrc
 
-# Install Pinggy (The Gateway - currently not being utilized)
-curl -s https://pinggy.io/install.sh | sh
+sb-init
+
+# Install Pinggy (The Gateway - currently not being utilized for this phase of testing)
+##curl -s https://pinggy.io/install.sh | sh
 
 # Install the SynapseBridge repo
-sb-init && sb-deb
 git clone -b local-qwen-gemma https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
 
 #Grant Script Executable Permissions
 cd ~/storage/shared/SynapseBridge
+mkdir -p ./scripts
 chmod +x scripts/*.sh
 
+#Install Debian
 proot-distro install debian
-
 
 ```
 ### 🔵 Step 2: Guest (Debian) and Virtual Environment (venv) Setup
-Enter Debian to build guest environment and build tools, build venv, install; pip, Python3, maturin, mempalace, mcp[cli] starlette, uvicorn.
+Enter Debian to establish aliases build guest environment, build tools, build venv, install; pip, Python3, maturin, mempalace, mcp[cli] starlette, uvicorn.
 ```bash
-# 1. Enter Guest and install build tools
+# 1. Enter Debian Guest, set aliases in .bashrc and install build tools
+
+#root@localhost:~#
 sb-deb
+
+# <<< SYNAPSE BRIDGE END <<<
+
+SYNAPSE_BLOCK=$(cat << 'EOF'
+#>>> SYNAPSE BRIDGE START >>>
+
+alias reload='source ~/.bashrc'
+
+#SynapseBridge Master Alias File
+alias sb-init='source /mnt/SynapseBridge/scripts/.sb-env-master'
+
+#SynapseBridge Custom UI Launcher
+alias synapse='echo -e "${MAGENTA}
+Type exit To Leave Debian And Retry
+This Command From Termux Root (~$)synapse.${NC}"'
+
+#Load SynapseBridge Master Alias List 
+sb-init
+
+# <<< SYNAPSE BRIDGE END <<<
+EOF
+)
+
+if grep -q "SYNAPSE BRIDGE START" ~/.bashrc; then
+    sed -i '/# >>> SYNAPSE BRIDGE START >>>/,/# <<< SYNAPSE BRIDGE END <<</d' ~/.bashrc
+fi
+echo "$SYNAPSE_BLOCK" >> ~/.bashrc && source ~/.bashrc
+
+sb-init
+
 apt update && apt install -y build-essential curl git python3-full python3-venv nodejs npm sqlite3 nano
 
 # 2. Install Rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source $HOME/.cargo/env
 
-# 3. Establish Guest-side loader
-echo "alias sb-init='source /mnt/SynapseBridge/scripts/.sb-env-master'" >> ~/.bashrc
-source ~/.bashrc
-
-# 4. Build the Venv & Install Core
+# 3. Build the Venv and Core
 cd ~ && mkdir -p SynapseBridge_Root && cd SynapseBridge_Root
 python3 -m venv venv
 
-# 5. The "Double-Lock" Activation & Install
+# 4. Activate Virtual Environment & Install Tools
 # We source the venv directly AND pull aliases to ensure pip is safe
-source venv/bin/activate
-sb-init && sb-venv-activate
+
+#(venv) root@localhost:~#
+sb-venv-activate
 pip install --upgrade pip
 pip install maturin mempalace "mcp[cli]" starlette uvicorn --prefer-binary
 
 ```
-(You may have to hit enter to proceed)
+(You may have to press enter to proceed)
 
-### 🟡 Step 3: SynapseBridge/MemPalace Android Compatibility Environment.
-Make dir tree and instruction set for MemPalace, then initiate MemPalace.
+
+### 🟡 Step 3: Move MCP File to SynapseBridge_Root
+(YOU CAN MODIFY .synapse_mcp.py FILE IN SynapseBridge/scripts TO ADD CUSTOM TOOLS,
+use the alias sb-sync to update it throughout the system).
 ```bash
-# 1. Sanity Check: Ensure environment is locked
-sb-init && sb-venv-activate
+# Make executable and move the shared MCP script to SynapseBridge_Root - We do it to reduce token counts.
 
-# 2. Initialize Memory Storage
-mkdir -p /mnt/SynapseBridge/palace
-echo "[]" > /mnt/SynapseBridge/palace/entities.json
-
-# 3. The Weld Config
-mkdir -p ~/.mempalace
-cat > ~/.mempalace/config.json <<EOF
-{
-  "palace_path": "/mnt/SynapseBridge/palace",
-  "storage_type": "json",
-  "collection_name": "synapse_bridge",
-  "topic_wings": ["technical", "memory", "SynapseBridge-Main"]
-}
-EOF
-
-# 4. Finalize MemPalace
-cd /mnt/SynapseBridge
-mempalace init . --yes
-
-```
-Do Not Mine Yet:
-When asked to mine after mempalace init completes, press n + enter.
-We modify a file in the next step before we mine for Android compatibility.
-Our modification allows the MemPalace to be broadcast outside of the protected root (android data/data) so it can be used via local MCP and remote tunnels with/and/by the MCP. It won't cause a problem if you accidentally auto mined the dir.
-
-### 🟡 Step 4: Move MCP File to SynapseBridge_Root
-(YOU CAN MODIFY .synapse_mcp.py FILE IN SynapseBridge DIR, run sb-sync to update it throughout the system).
-```bash
-# Make executable and move the shared MCP script to SynapseBridge_Root
+#(venv) root@localhost:~#
+cd~
 chmod +x /mnt/SynapseBridge/scripts/.synapse_mcp.py
 cp /mnt/SynapseBridge/scripts/.synapse_mcp.py /root/SynapseBridge_Root/.synapse_mcp.py
 
 ```
-### 🟡 Step 5: Zones Ollama/Gemma/Qwen
-This ensures the Agent knows where to write and how to navigate.
+### 🟡 Step 4: Zones Ollama/Gemma/Qwen
+This ensures the Agent knows where to write and how to navigate. (May become obsolete once we align the context.txt)
 ```bash
 mkdir -p /mnt/SynapseBridge/OllamaGenerated
 cat > /mnt/SynapseBridge/Ollama.md <<EOF
@@ -183,35 +178,26 @@ cat > /mnt/SynapseBridge/Ollama.md <<EOF
 - Agent Storage: /mnt/SynapseBridge/OllamaGenerated
 - Ports: 8080 (Unified MCP), 443 (Pinggy Tunnel)
 - Execution: You are running in Termux Host with access to Debian via 'sb-deb' you may need to use sb-init to pull Aliases from alias file if commands fail.
-- Rule: Always write logs/files to the GeminiGenerated/ directory.
+- Rule: Always write logs/files to the OllamaGenerated/ directory.
 EOF
 
 ```
-### 🟡 Step 6: Populate the Memory
-Mine the palace
-```bash
-# Enter environment if not already inside
-sb-deb
+### 🟡 Step 5: Download and install Ollama, Gemma:2b and Qwen2.5:3b
+(You can download higher versions if you like. We are building this on a 5gig ram phone and these are the models that support our hardware)
 
-# Activate and index
-sb-init && sb-venv-activate && sb-init
-mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
-
-```
-### 🟡 Step 7: Download and install Ollama
-1. For Android / ARM64 (Most Users):
+1. For Android / ARM64 Systems (Most Users):
 ```bash
 curl -L https://ollama.com/download/ollama-linux-arm64 -o /usr/local/bin/ollama
 chmod +x /usr/local/bin/ollama
 
 ```
-- For Desktop / AMD64:
+# For Desktop / AMD64 Systems:
 ```bash
 curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/local/bin/ollama
 chmod +x /usr/local/bin/ollama
 
 ```
-2. Initialize the Server
+2. Initialize the Ollama Provider Server
 ```bash
 # ​Because we are in a proot environment without systemd, the server must be started manually. It is best to do this in a separate terminal or using nohup.
 
@@ -228,15 +214,62 @@ ollama pull qwen:2.5:3b
 
 ```
 
+### 🟡 Step 6: SynapseBridge/MemPalace Android Compatibility Environment.
+Make dir tree and instruction set for MemPalace, then initiate MemPalace.
+```bash
+# 1. Insure (venv) root@localhost:~#
+cd ~
+sb-init
+sb-venv-activate
+
+# 2. Initialize Memory Storage
+mkdir -p /mnt/SynapseBridge/palace
+echo "[]" > /mnt/SynapseBridge/palace/entities.json
+
+# 3. Configure Mempalace To Put It's Palace Data In Shared Storege So Our Agents Can Access It.
+mkdir -p ~/.mempalace
+cat > ~/.mempalace/config.json <<EOF
+{
+  "palace_path": "/mnt/SynapseBridge/palace",
+  "storage_type": "json",
+  "collection_name": "synapse_bridge",
+  "topic_wings": ["technical", "memory", "SynapseBridge-Main"]
+}
+EOF
+
+# 4. Patch The MemPalace CLI file and Enable Model Selection During MemPalace Init In The Shared Zone. The patch makes a backuo of the original
+mempalace-cli-patch
+mempalace init . --yes
+
+```
+
+<img src="https://raw.githubusercontent.com/p1m37aradox/SynapseBridge/refs/heads/local-qwen-gemma/media/Screenshot_20260516-223328.png" width="350" alt="Synapse Bridge UI">
+
+
+### 🟡 Step 7: Populate the Memory
+Mine the palace
+```bash
+# Enter Debian if not already inside
+#root@localhost:~#
+sb-deb
+
+# Go to SynapseBridge Shared Zone Dir.
+# This Is Your Local Storage
+# root@localhost:/mnt/SynapseBridge#
+cd-bridge
+
+# Activate and index - (venv)
+#(venv) root@localhost:/mnt/SynapseBridge#
+sb-venv-activate
+
+# MemPalace Mine of Shared Dir (SynapseBridge)
+mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
+
+```
+
 ### **Phase 3: Initialize**
 🟡 Select Your SynapseBridge UI:<br>
 You can use our custom tmux UI or run each individually. See the second image with instructions if you DO NOT want to use our custom UI.
-<br>
-##‼️ Custom UI KNOWN BUG:
-<br>
-Always fully close Termux after exiting the UI (use the notification drawer "Exit" button). If you leave Termux running in the background, the Debian environment may fail to restart correctly.
-<br>
-<img src="https://github.com/p1m37aradox/SynapseBridge/blob/e62cd273f641550e84c2ec2640787a197c00aa3e/media/OllamDebianBreak.png" width="30%" alt="Synapse Bridge UI2">
 <br>
 # Custom UI
 *Note on custom UI, if you are already using a custom UI this may break it, This is for a fresh Termux install focused on the SynapseBridge.
@@ -278,7 +311,6 @@ OR
 ```bash
 printf '\e]1;synapse-mempalace-mcp\a'
 sb-deb
-sb-init
 sb-venv-activate
 sb-mcp
 
@@ -288,9 +320,7 @@ You can choose the tunnel service of your choice if you want online LLM interact
 ```bash
 printf '\e]1;QWEN2.5:3b+mempalace\a'
 sb-deb
-sb-init
 sb-venv-activate
-sb-init
 sb-chat
 
 ```
@@ -298,7 +328,6 @@ sb-chat
 ```bash
 printf '\e]1;SB_Venv\a'
 sb-deb
-sb-init
 source ~/SynapseBridge_Root/venv/bin/activate
 
 ```
@@ -306,7 +335,6 @@ source ~/SynapseBridge_Root/venv/bin/activate
 ```bash
 printf '\e]1;Debian_CLI\a'
 sb-deb
-sb-init
 cd /mnt/SynapseBridge
 
 ```
@@ -321,7 +349,6 @@ sb-init
 ```bash
 printf '\e]1;Ollama\a'
 sb-deb
-sb-init
 ollama
 
 ```
@@ -339,7 +366,9 @@ We found this might be a useful tool. We will be testing but it more. It success
 
 1. Start the MCP server in a fresh terminal:
 ```bash
-sb-deb && sb-init && sb-mcp
+sb-deb
+sb-init
+sb-mcp
 
 ```
 2. Open App, click settings and follow the instructions. Choose Ollama and choose your models you want.
