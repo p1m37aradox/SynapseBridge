@@ -191,7 +191,7 @@ curl -L https://ollama.com/download/ollama-linux-arm64 -o /usr/local/bin/ollama
 chmod +x /usr/local/bin/ollama
 
 ```
-# For Desktop / AMD64 Systems:
+ - For Desktop / AMD64 Systems:
 ```bash
 curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/local/bin/ollama
 chmod +x /usr/local/bin/ollama
