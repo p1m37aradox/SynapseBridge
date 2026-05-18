@@ -84,14 +84,14 @@ echo "$SYNAPSE_BLOCK" >> ~/.bashrc && source ~/.bashrc
 #Load new bash alias list
 reload
 
-#Load SynapseBridge Master alias file
-sb-init
-
 # Install Pinggy (The Gateway - currently not being utilized for this phase of testing)
 ##curl -s https://pinggy.io/install.sh | sh
 
 # Install the SynapseBridge repo
 git clone -b local-qwen-gemma https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
+
+#Load SynapseBridge Master alias file
+sb-init
 
 #Grant Script Executable Permissions
 cd ~/storage/shared/SynapseBridge
