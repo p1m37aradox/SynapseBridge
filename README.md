@@ -45,10 +45,6 @@ pkg update -y
 # Now that mirrors are fixed, we can safely pull proot-distro
 pkg install termux-api proot-distro tmux python openssh wget curl git nodejs -y
 
-# 3. Environment Lock & Permissions
-termux-wake-lock
-termux-setup-storage
-
 ```
 Setup Storage For The Environment
 ```bash
