@@ -34,48 +34,43 @@ Gemini repo:
 *Launch Termux from your app drawer and run the following in Terminal 1.*
 
 ### 🟢 Step 1: Termux Prep and Debian Install:
-Run these blocks first to prepare the Android environment, install the tunnel, establish aliases, install the SynapseBridge repo and Debian.
+Run these blocks first to prepare the Android environment, establish aliases, install the SynapseBridge repo and Debian.
 ```bash
 # 1. Environment Lock & Permissions
 termux-wake-lock
 termux-setup-storage
 
-# 2. Forces Termux to use the main global mirror and bypasses the broken 'pkg' wrapper
+```
+#Install Required PKGs
+```bash
+# 1. Forces Termux to use the main global mirror and bypasses the broken 'pkg' wrapper
 sed -i 's|https://dl.astral.sh/termux-main|https://deb.debian.org/termux/termux-main|g' $PREFIX/etc/apt/sources.list
 
-#3.  Force low-level apt to synchronize and rebuild the core network libraries
+#3. Force low-level apt to synchronize and rebuild the core network libraries
 apt update && apt full-upgrade -y
 
 # 4. Core Utility & Manager Install
 # Now that the libraries match perfectly, pulling the core tools is 100% safe
 
-pkg install termux-api
-
-pkg install proot-distro
-
-pkg install tmux
-
-pkg install python
-
-pkg install openssh
-
-pkg install wget
-
-pkg install curl
-
-pkg install git
- 
-pkg install nodejs -y
+pkg install curl termux-api tmux wget python nodejs proot-distro openssh -y
 
 ```
 Wait for the Android popup and click "Allow" before moving to the next block.
 (press y to confirm at prompts)
 
+#Install Proot
+```bash
+#Donwload Proot Distro
+pkg install proot-distro
+
+```
+#Termux Root aliases, Install Git, SynapseBridge Repo and Debian.
 ```bash
 # This block establishes the Temrux Root (~$) 'synapse' (UI) and 'sb-deb' (Login) commands.
 mkdir -p ~/storage/shared/SynapseBridge
 
-# Install the SynapseBridge repo
+# Install git and the SynapseBridge repo
+pkg install git -y
 git clone -b local-qwen-gemma https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
 
 SYNAPSE_BLOCK=$(cat << 'EOF'
