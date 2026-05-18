@@ -61,15 +61,17 @@ pkg install curl termux-api tmux wget python nodejs proot-distro openssh git -y
 #Termux Root aliases, Install Git, SynapseBridge Repo and Debian.
 ```bash
 # This block establishes the Temrux Root (~$) 'synapse' (UI) and 'sb-deb' (Login) commands.
-mkdir -p ~/storage/shared/SynapseBridge
-cd ~/storage/shared/SynapseBridge
+
+cd ~/storage/shared/
+
+# Install the SynapseBridge repo
+git clone -b local-qwen-gemma https://github.com/p1m37aradox/SynapseBridge.git
 
 #Grant Script Executable Permissions
 mkdir -p ./scripts
-chmod +x scripts/*.sh
+chmod +x scripts/*.*
 
-# Install and the SynapseBridge repo
-git clone -b local-qwen-gemma https://github.com/p1m37aradox/SynapseBridge.git
+#Set Termux .bashrc aliases
 
 SYNAPSE_BLOCK=$(cat << 'EOF'
 #>>> SYNAPSE BRIDGE START >>>
@@ -104,21 +106,29 @@ sb-init
 ##curl -s https://pinggy.io/install.sh | sh
 
 ```
-#Install Debian Proot
+#Launch Debian Proot
 ```bash
+#Load new bash alias list if not already.
+reload
+
+#Load SynapseBridge Master alias file if not already 
+sb-init
+
 #Install Debian
 proot-distro install debian
 
 ```
+
 ### 🔵 Step 2: Guest (Debian) and Virtual Environment (venv) Setup
 Enter Debian to establish aliases build guest environment, build tools, build venv, install; pip, Python3, maturin, mempalace, mcp[cli] starlette, uvicorn.
 ```bash
-# 1. Enter Debian Guest, set aliases in .bashrc and install build tools
+#Enter Debian Guest Env.
+proot-distro login debian --bind $HOME/storage/shared/SynapseBridge:/mnt/SynapseBridge
 
-#Launch Debian Proot
-#root@localhost:~#
-sb-deb
-
+```
+#Create Debian .bashrc Alias List
+```bash
+# 1. Set aliases in Debian .bashrc
 
 # <<< SYNAPSE BRIDGE END <<<
 
@@ -153,21 +163,35 @@ reload
 #Load Master Alias List
 sb-init
 
+```
+#Install Updates and Pkgs
+```bash
 apt update && apt install -y build-essential curl git python3-full python3-venv nodejs npm sqlite3 nano
 
-# 2. Install Rust
+```
+#Install Rust
+```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 source $HOME/.cargo/env
 
-# 3. Build the Venv and Core
-cd ~ && mkdir -p SynapseBridge_Root && cd SynapseBridge_Root
+# Install MCP Inspector globally
+npm install -g @modelcontextprotocol/inspector
+
+```
+
+#Build the Venv and Root
+```bash
+cd ~ && mkdir -p SynapseBridge_Root && cd SynapseBridge_Root  && mkdir -p scripts
+chmod +x scripts
 python3 -m venv venv
 
-# 4. Activate Virtual Environment & Install Tools
-# We source the venv directly AND pull aliases to ensure pip is safe
+```
 
+#Activate Virtual Environment & Install Tools
+```bash
+# Enter Venv and Install Tools
 #(venv) root@localhost:~#
-sb-venv-activate
+source venv/bin/activate
 pip install --upgrade pip
 pip install maturin mempalace "mcp[cli]" starlette uvicorn --prefer-binary
 
@@ -175,30 +199,28 @@ pip install maturin mempalace "mcp[cli]" starlette uvicorn --prefer-binary
 (You may have to press enter to proceed)
 
 
-### 🟡 Step 3: Move MCP File to SynapseBridge_Root
+### 🟡 Step 3: Move MCP File and Edit Mempalace CLI
 (YOU CAN MODIFY .synapse_mcp.py FILE IN SynapseBridge/scripts TO ADD CUSTOM TOOLS,
-use the alias sb-sync to update it throughout the system).
+use the alias sb-sync to update it throughout the system after this step).
 ```bash
-# Make executable and move the shared MCP script to SynapseBridge_Root - We do it to reduce token counts.
+# Copy the shared MCP script (.synapse_mcp.py) to SynapseBridge_Root - We do it to reduce token counts.
+sb-init
+sb-sync
 
-#(venv) root@localhost:~#
-cd~
-chmod +x /mnt/SynapseBridge/scripts/.synapse_mcp.py
-cp /mnt/SynapseBridge/scripts/.synapse_mcp.py /root/SynapseBridge_Root/.synapse_mcp.py
+# Makes a backup of default cli.py from mempalace located @ Debian /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py
+cli-bkp
+
+#Patches @ Debian /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py
+mempalace-cli-patch
 
 ```
-### 🟡 Step 4: Zones Ollama/Gemma/Qwen
+### 🟡 Step 4: Zones for Ollama
 This ensures the Agent knows where to write and how to navigate. (May become obsolete once we align the context.txt)
 ```bash
-mkdir -p /mnt/SynapseBridge/OllamaGenerated
-cat > /mnt/SynapseBridge/Ollama.md <<EOF
-# 🌉 Synapse Bridge Context
-- Shared Zone: /mnt/SynapseBridge
-- Agent Storage: /mnt/SynapseBridge/OllamaGenerated
-- Ports: 8080 (Unified MCP), 443 (Pinggy Tunnel)
-- Execution: You are running in Termux Host with access to Debian via 'sb-deb' you may need to use sb-init to pull Aliases from alias file if commands fail.
-- Rule: Always write logs/files to the OllamaGenerated/ directory.
-EOF
+cd-bridge && mkdir -p ./OllamaGenerated
+
+#Prep for Ollama Install
+apt update && apt install -y tar zstd curl
 
 ```
 ### 🟡 Step 5: Download and install Ollama, Gemma:2b and Qwen2.5:3b
@@ -206,33 +228,39 @@ EOF
 
 1. For Android / ARM64 Systems (Most Users):
 ```bash
-curl -L https://ollama.com/download/ollama-linux-arm64 -o /usr/local/bin/ollama
-chmod +x /usr/local/bin/ollama
+curl -fsSL https://ollama.com/download/ollama-linux-arm64.tar.zst | tar --zstd -x -C /usr
 
 ```
  - For Desktop / AMD64 Systems:
 ```bash
-curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/local/bin/ollama
-chmod +x /usr/local/bin/ollama
+curl -fsSL https://ollama.com/download/ollama-linux-amd64.tar.zst | tar --zstd -x -C /usr
+
 
 ```
 2. Initialize the Ollama Provider Server
 ```bash
-# ​Because we are in a proot environment without systemd, the server must be started manually. It is best to do this in a separate terminal or using nohup.
-
 # Set host to allow the bridge to connect, then launch
-export OLLAMA_HOST = 0.0.0.0:11434
-nohup ollama serve > ollama.log 2 > &1 &
+export OLLAMA_HOST=0.0.0.0:11434
+nohup ollama serve > ollama.log 2>&1 &
 
 ```
-3. Pull the "local-qwen-gemma" stack
+3. Pull gemma:2b model into Ollama
 ```bash
 # Pulling the optimized weights for local inference - the mobile builds: WHAT WE ARE TESTING
-ollama pull gemma:2b
-ollama pull qwen:2.5:3b
+#Install gemma:2b
 
 ```
+4. Pull qwen2.5:3b model into Ollama
+```bash
+ollama pull qwen2.5:3b
 
+```
+4. Allow Qwen to to see MCP tools via script.
+```bash
+#Pip install MCP httpx
+pip install ollama mcp httpx
+
+```
 ### 🟡 Step 6: SynapseBridge/MemPalace Android Compatibility Environment.
 Make dir tree and instruction set for MemPalace, then initiate MemPalace.
 ```bash
@@ -256,8 +284,7 @@ cat > ~/.mempalace/config.json <<EOF
 }
 EOF
 
-# 4. Patch The MemPalace CLI file and Enable Model Selection During MemPalace Init In The Shared Zone. The patch makes a backuo of the original
-mempalace-cli-patch
+#Start Mempalace with model selection (from cli.py patch, choose qwen2.5:3b if it doesn't default to it.
 mempalace init . --yes
 
 ```
@@ -266,21 +293,8 @@ mempalace init . --yes
 
 
 ### 🟡 Step 7: Populate the Memory
-Mine the palace
+Mine the palace if not automatically done in previous step.
 ```bash
-# Enter Debian if not already inside
-#root@localhost:~#
-sb-deb
-
-# Go to SynapseBridge Shared Zone Dir.
-# This Is Your Local Storage
-# root@localhost:/mnt/SynapseBridge#
-cd-bridge
-
-# Activate and index - (venv)
-#(venv) root@localhost:/mnt/SynapseBridge#
-sb-venv-activate
-
 # MemPalace Mine of Shared Dir (SynapseBridge)
 mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 
@@ -297,7 +311,13 @@ You can use our custom tmux UI or run each individually. See the second image wi
 
 <img src="https://raw.githubusercontent.com/p1m37aradox/SynapseBridge/refs/heads/local-qwen-gemma/media/Screenshot_20260514-151232.png" width="350" alt="Synapse Bridge UI">
 
-*Run these commands in the root Termux terminal. If you're in the (venv) or Debian environment, type exit and press enter until you get to the root terminal prompt: ~$
+*Run these commands in the root Termux terminal. If you are in:
+
+(venv)root@localhost:xxx/xxx<br>or<br>root@localhost:xxx/xxx/xxx
+
+-Type exit then press enter until you arrive at:<br>~ $
+
+You must restart Termux (exit via notification drawer on device) after running the next block for changes to take effect.
 ```bash
 # 1. Update Keys & Status Bar
 mkdir -p ~/.termux && echo "extra-keys = [['ESC','CTRL','ALT','TAB','LEFT','DOWN','UP','RIGHT'],[{macro: 'CTRL b n', display: 'NEXT'}, {macro: 'CTRL b p', display: 'PREV'},'HOME','END','PGUP','PGDN','MENU','EXIT']]" > ~/.termux/termux.properties && termux-reload-settings
@@ -311,18 +331,19 @@ tmux source-file ~/.tmux.conf 2>/dev/null
 # 2. Permissions & Alias (CORRECTED PATHS)
 chmod +x ~/storage/shared/SynapseBridge/scripts/UI_main.sh
 
+
+exit
 ```
-*Launch the custom UI. To exit navigate to window 6 with the NEXT or PREV buttons and press ENTER. You can use this command as your start from now on.
+*Launch the custom UI.<br><br>You can use this command as your start from now on.
 
 START
 ```bash
 synapse
 ```
-OR
+To exit navigate with the NEXT or PREV buttons to the EXIT window in the UI.
 
+**Standard UI**<br>
 **To run the full stack without custom UI, you must open **6 Termux sessions**. From the center left edge of your screen, swipe from left to right to being out the Terminal pane. Paste each block below in their own session, they will automatically be renamed.
-
-**Standard UI**
 
 <img src="https://raw.githubusercontent.com/p1m37aradox/SynapseBridge/refs/heads/local-qwen-gemma/media/Screenshot_20260514-154307.png" width="350" alt="Synapse Bridge UI2">
 
@@ -335,7 +356,6 @@ sb-mcp
 
 ```
 **Terminal 2: Qwen + MemPalace**
-You can choose the tunnel service of your choice if you want online LLM interaction.
 ```bash
 printf '\e]1;QWEN2.5:3b+mempalace\a'
 sb-deb
@@ -376,10 +396,10 @@ Standard UI- After initial install is complete, to restore environment:
 * re open 6 terminals
 * execute the bash commands in the terminals in order.
 
-**Important: Once initialized, share the status of Terminal 1 and the Pinggy URL from Terminal 2 with the LLM to establish the bridge.**
+Type "mempalace wake up" in the Qwen window.
 
 ### 🟡 Step 8: (Optional) ChatBoost App
-We found this might be a useful tool. We will be testing but it more. It successfully loaded 3 tools from the mcp during our testing but our MCP requires more custinizarion for it to fully function.
+We found this might be a useful tool. We will be testing it more later. It successfully loaded 3 tools from the mcp during our testing but our MCP requires more customization for it to fully function. (have not tried to load our client script into the app)
 
 [Chatboost][chatboost]
 

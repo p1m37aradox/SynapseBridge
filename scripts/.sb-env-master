@@ -18,7 +18,11 @@ fi
     
     alias cd-bridge='cd /mnt/SynapseBridge'
     
-    alias cd-junk='cd /mnt/Junk'
+    alias cd-sbroot='cd /mnt/SynapseBridge_Root'
+    
+    alias cd-bin='cd /mnt/Junk'
+    
+    alias sb-troot='/usr/local/bin'
 
     alias g-status='cd /mnt/SynapseBridge && git status'
 
@@ -37,17 +41,18 @@ fi
 #---------------TOOLS---------------
 #Makes a shadow copy of .synapse_mcp and puts it in the root.
 
-    alias sb-sync='cd-bridge && cp ./scripts/.synapse_mcp.py /root/SynapseBridge_Root/scripts/.synapse_mcp.py && echo \"✅ Root copy updated.\"'
+    alias sb-sync='cd-bridge && chmod +x ./scripts/.synapse_mcp.py && cp ./scripts/.synapse_mcp.py /root/SynapseBridge_Root/scripts/.synapse_mcp.py && echo \"✅ Root copy updated.\"'
     
     
-# Makes a backup of default cli.py from mempalace distro
+# Makes a backup of default cli.py from mempalace
+    alias cli-bkp='cp /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py.bak'
 
-    alias mempalace-cli-patch='cd && cd-bridge && chmod +x ./scripts/.cli_patch.py
+# Executes the cli patch script.
+    alias mempalace-cli-patch='cd-bridge && chmod +x ./scripts/.cli_patch.py
     python3 /mnt/SynapseBridge/scripts/.cli_patch.py'
 
 # Revert the CLI to its original state
-
-    alias bridge-restore='mv /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py.bak /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py'
+    alias cli-rstr='mv /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py.bak /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py'
 
 
 

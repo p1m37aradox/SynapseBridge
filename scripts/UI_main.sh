@@ -3,7 +3,7 @@
 SESSION="Synapse"
 
 tmux kill-session -t $SESSION 2>/dev/null
-echo "🚀 Launching Synapse v0.1.5-beta Qwen+MemPalace Stack..."
+echo "🚀 Launching Synapse v0.1.6-beta Qwen+MemPalace Stack..."
 
 # 1. MCP
 tmux new-session -d -s $SESSION -n 'MCP'

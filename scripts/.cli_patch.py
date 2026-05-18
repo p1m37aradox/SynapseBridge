@@ -66,7 +66,7 @@ def apply_patch():
     with open(TARGET, 'w') as f:
         f.write(content)
     
-    print("🚀 Synapse Patch Applied: Indentation is now clean and logical.")
+    print("🚀 Synapse Patch Applied.")
 
 if __name__ == "__main__":
     apply_patch()
