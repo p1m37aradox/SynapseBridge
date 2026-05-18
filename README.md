@@ -103,6 +103,9 @@ cd ~/storage/shared/SynapseBridge
 mkdir -p ./scripts
 chmod +x scripts/*.sh
 
+```
+#Install Debian Proot
+```bash
 #Install Debian
 proot-distro install debian
 
