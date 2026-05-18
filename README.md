@@ -47,6 +47,9 @@ sed -i 's|https://dl.astral.sh/termux-main|https://deb.debian.org/termux/termux-
 apt update && apt full-upgrade -y
 
 ```
+Wait for the Android popup and click "Allow" before moving to the next block.
+(press y to confirm at prompts)
+
 #Install Required PKGs
 ```bash
 # 4. Core Utility & Manager Install
@@ -54,11 +57,7 @@ apt update && apt full-upgrade -y
 
 pkg install curl termux-api tmux wget python nodejs proot-distro openssh -y
 
-
 ```
-Wait for the Android popup and click "Allow" before moving to the next block.
-(press y to confirm at prompts)
-
 #Install Proot
 ```bash
 #Donwload Proot Distro
