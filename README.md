@@ -80,6 +80,11 @@ if grep -q "SYNAPSE BRIDGE START" ~/.bashrc; then
 fi
 echo "$SYNAPSE_BLOCK" >> ~/.bashrc && source ~/.bashrc
 
+
+#Load new bash alias list
+reload
+
+#Load SynapseBridge Master alias file
 sb-init
 
 # Install Pinggy (The Gateway - currently not being utilized for this phase of testing)
@@ -129,8 +134,13 @@ if grep -q "SYNAPSE BRIDGE START" ~/.bashrc; then
 fi
 echo "$SYNAPSE_BLOCK" >> ~/.bashrc && source ~/.bashrc
 
+#Load New bashrc Aliases In Debian
 reload
+
+#Load Master Alias List
 sb-init
+
+#Launch Debian Proot
 #root@localhost:~#
 sb-deb
 
