@@ -107,6 +107,11 @@ Enter Debian to establish aliases build guest environment, build tools, build ve
 ```bash
 # 1. Enter Debian Guest, set aliases in .bashrc and install build tools
 
+#Launch Debian Proot
+#root@localhost:~#
+sb-deb
+
+
 # <<< SYNAPSE BRIDGE END <<<
 
 SYNAPSE_BLOCK=$(cat << 'EOF'
@@ -139,10 +144,6 @@ reload
 
 #Load Master Alias List
 sb-init
-
-#Launch Debian Proot
-#root@localhost:~#
-sb-deb
 
 apt update && apt install -y build-essential curl git python3-full python3-venv nodejs npm sqlite3 nano
 
