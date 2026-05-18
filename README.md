@@ -55,7 +55,7 @@ Wait for the Android popup and click "Allow" before moving to the next block.
 # 4. Core Utility & Manager Install
 # Now that the libraries match perfectly, pulling the core tools is 100% safe
 
-pkg install curl termux-api tmux wget python nodejs proot-distro openssh -y
+pkg install curl termux-api tmux wget python nodejs proot-distro openssh git -y
 
 ```
 #Termux Root aliases, Install Git, SynapseBridge Repo and Debian.
@@ -63,8 +63,7 @@ pkg install curl termux-api tmux wget python nodejs proot-distro openssh -y
 # This block establishes the Temrux Root (~$) 'synapse' (UI) and 'sb-deb' (Login) commands.
 mkdir -p ~/storage/shared/SynapseBridge
 
-# Install git and the SynapseBridge repo
-pkg install git -y
+# Install and the SynapseBridge repo
 git clone -b local-qwen-gemma https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
 
 SYNAPSE_BLOCK=$(cat << 'EOF'
