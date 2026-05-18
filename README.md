@@ -58,12 +58,6 @@ Wait for the Android popup and click "Allow" before moving to the next block.
 pkg install curl termux-api tmux wget python nodejs proot-distro openssh -y
 
 ```
-#Install Proot
-```bash
-#Donwload Proot Distro
-pkg install proot-distro
-
-```
 #Termux Root aliases, Install Git, SynapseBridge Repo and Debian.
 ```bash
 # This block establishes the Temrux Root (~$) 'synapse' (UI) and 'sb-deb' (Login) commands.
