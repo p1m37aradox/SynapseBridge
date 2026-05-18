@@ -36,21 +36,28 @@ Gemini repo:
 ### 🟢 Step 1: Termux Prep and Debian Install:
 Run these blocks first to prepare the Android environment, install the tunnel, establish aliases, install the SynapseBridge repo and Debian.
 ```bash
-# 1. Immediate Mirror Reset
-# This forces Termux to use the main global mirror instead of a broken local one
-sed -i 's|https://dl.astral.sh/termux-main|https://deb.debian.org/termux/termux-main|g' $PREFIX/etc/apt/sources.list
-pkg update -y
-
-# 2. Core Utility & Manager Install
-# Now that mirrors are fixed, we can safely pull proot-distro
-pkg install termux-api proot-distro tmux python openssh wget curl git nodejs -y
-
-```
-Setup Storage For The Environment
-```bash
-# 3. Environment Lock & Permissions
+# 1. Environment Lock & Permissions
 termux-wake-lock
 termux-setup-storage
+
+# 2. Forces Termux to use the main global mirror and bypasses the broken 'pkg' wrapper
+sed -i 's|https://dl.astral.sh/termux-main|https://deb.debian.org/termux/termux-main|g' $PREFIX/etc/apt/sources.list
+
+#3.  Force low-level apt to synchronize and rebuild the core network libraries
+apt update && apt full-upgrade -y
+
+# 4. Core Utility & Manager Install
+# Now that the libraries match perfectly, pulling the core tools is 100% safe
+
+pkg install termux-api
+pkg install proot-distro
+pkg install tmux
+pkg install python
+pkg install openssh
+pkg install wget
+pkg install curl
+pkg install git 
+pkg install nodejs -y
 
 ```
 Wait for the Android popup and click "Allow" before moving to the next block.
