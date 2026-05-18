@@ -54,6 +54,11 @@ apt update && apt full-upgrade -y
 
 pkg install curl termux-api tmux wget python nodejs proot-distro openssh -y
 
+#3. To insure all pkgs install, we run this section a second time. (due to errors)
+apt update && apt full-upgrade -y
+
+pkg install curl termux-api tmux wget python nodejs proot-distro openssh -y
+
 ```
 Wait for the Android popup and click "Allow" before moving to the next block.
 (press y to confirm at prompts)
