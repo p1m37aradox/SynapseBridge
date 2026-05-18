@@ -50,13 +50,21 @@ apt update && apt full-upgrade -y
 # Now that the libraries match perfectly, pulling the core tools is 100% safe
 
 pkg install termux-api
+
 pkg install proot-distro
+
 pkg install tmux
+
 pkg install python
+
 pkg install openssh
+
 pkg install wget
+
 pkg install curl
-pkg install git 
+
+pkg install git
+ 
 pkg install nodejs -y
 
 ```
