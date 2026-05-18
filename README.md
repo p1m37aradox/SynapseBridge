@@ -50,12 +50,22 @@ termux-wake-lock
 termux-setup-storage
 
 ```
+Setup Storage For The Environment
+```bash
+# 3. Environment Lock & Permissions
+termux-wake-lock
+termux-setup-storage
+
+```
 Wait for the Android popup and click "Allow" before moving to the next block.
 (press y to confirm at prompts)
 
 ```bash
 # This block establishes the Temrux Root (~$) 'synapse' (UI) and 'sb-deb' (Login) commands.
 mkdir -p ~/storage/shared/SynapseBridge
+
+# Install the SynapseBridge repo
+git clone -b local-qwen-gemma https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
 
 SYNAPSE_BLOCK=$(cat << 'EOF'
 #>>> SYNAPSE BRIDGE START >>>
@@ -80,18 +90,14 @@ if grep -q "SYNAPSE BRIDGE START" ~/.bashrc; then
 fi
 echo "$SYNAPSE_BLOCK" >> ~/.bashrc && source ~/.bashrc
 
-
 #Load new bash alias list
 reload
 
-# Install Pinggy (The Gateway - currently not being utilized for this phase of testing)
-##curl -s https://pinggy.io/install.sh | sh
-
-# Install the SynapseBridge repo
-git clone -b local-qwen-gemma https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
-
 #Load SynapseBridge Master alias file
 sb-init
+
+# Install Pinggy (The Gateway - currently not being utilized for this phase of testing)
+##curl -s https://pinggy.io/install.sh | sh
 
 #Grant Script Executable Permissions
 cd ~/storage/shared/SynapseBridge
