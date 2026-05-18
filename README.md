@@ -102,9 +102,6 @@ Enter Debian to establish aliases build guest environment, build tools, build ve
 ```bash
 # 1. Enter Debian Guest, set aliases in .bashrc and install build tools
 
-#root@localhost:~#
-sb-deb
-
 # <<< SYNAPSE BRIDGE END <<<
 
 SYNAPSE_BLOCK=$(cat << 'EOF'
@@ -132,7 +129,10 @@ if grep -q "SYNAPSE BRIDGE START" ~/.bashrc; then
 fi
 echo "$SYNAPSE_BLOCK" >> ~/.bashrc && source ~/.bashrc
 
+reload
 sb-init
+#root@localhost:~#
+sb-deb
 
 apt update && apt install -y build-essential curl git python3-full python3-venv nodejs npm sqlite3 nano
 
