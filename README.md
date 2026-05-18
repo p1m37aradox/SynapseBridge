@@ -40,15 +40,15 @@ Run these blocks first to prepare the Android environment, establish aliases, in
 termux-wake-lock
 termux-setup-storage
 
-```
-#Install Required PKGs
-```bash
 # 1. Forces Termux to use the main global mirror and bypasses the broken 'pkg' wrapper
 sed -i 's|https://dl.astral.sh/termux-main|https://deb.debian.org/termux/termux-main|g' $PREFIX/etc/apt/sources.list
 
 #3. Force low-level apt to synchronize and rebuild the core network libraries
 apt update && apt full-upgrade -y
 
+```
+#Install Required PKGs
+```bash
 # 4. Core Utility & Manager Install
 # Now that the libraries match perfectly, pulling the core tools is 100% safe
 
