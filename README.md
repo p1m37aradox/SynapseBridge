@@ -62,9 +62,14 @@ pkg install curl termux-api tmux wget python nodejs proot-distro openssh git -y
 ```bash
 # This block establishes the Temrux Root (~$) 'synapse' (UI) and 'sb-deb' (Login) commands.
 mkdir -p ~/storage/shared/SynapseBridge
+cd ~/storage/shared/SynapseBridge
+
+#Grant Script Executable Permissions
+mkdir -p ./scripts
+chmod +x scripts/*.sh
 
 # Install and the SynapseBridge repo
-git clone -b local-qwen-gemma https://github.com/p1m37aradox/SynapseBridge.git ~/storage/shared/SynapseBridge
+git clone -b local-qwen-gemma https://github.com/p1m37aradox/SynapseBridge.git
 
 SYNAPSE_BLOCK=$(cat << 'EOF'
 #>>> SYNAPSE BRIDGE START >>>
@@ -97,11 +102,6 @@ sb-init
 
 # Install Pinggy (The Gateway - currently not being utilized for this phase of testing)
 ##curl -s https://pinggy.io/install.sh | sh
-
-#Grant Script Executable Permissions
-cd ~/storage/shared/SynapseBridge
-mkdir -p ./scripts
-chmod +x scripts/*.sh
 
 ```
 #Install Debian Proot
