@@ -198,10 +198,7 @@ mempalace mine /mnt/SynapseBridge --wing "SynapseBridge-Main"
 visit: https://ai.google.dev/gemini-api/docs/api-key
 ```bash
 # 1. Install the Agent on the Host
-npm install -g @google/generative-ai-cli
-
-# 2. Set API Key
-export GOOGLE_API_KEY="YOUR_KEY_HERE"
+npm install -g @google/gemini-cli
 
 ```
 ### **Phase 3: Initialize**
