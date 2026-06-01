@@ -1,7 +1,7 @@
 PASTE AS IS INTO A ANDROID LLM PROMPT
 
 ### 🌉 Synapse Bridge v0.0.7.0b-QWEN
-This version establishes a secure, unified MCP (Model Context Protocol) bridge specifically optimized for Gemma and Qwen running in Ollama, on a proot Debian environment. It provides the AI Agent with low-latency access to the Android filesystem, hardware APIs, and an embedded memory engine.
+An Android agentic framework that provides a local AI Agent with low-latency access to the mempalace mcp tool set, Android filesystem and hardware APIs
 
 Testing with: qwen3.5:0.8b, qwen2.5-coder:3b-instruct-q4_K_M, qwen2.5-coder:1.5b, qwen2.5:3b and Gemma:2b
 
