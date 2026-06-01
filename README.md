@@ -1,9 +1,10 @@
 PASTE AS IS INTO A ANDROID LLM PROMPT
 
-### 🌉 Synapse Bridge v0.0.6.2b-GEMMA/QWEN
+### 🌉 Synapse Bridge v0.0.7.0b-QWEN
 This version establishes a secure, unified MCP (Model Context Protocol) bridge specifically optimized for Gemma and Qwen running in Ollama, on a proot Debian environment. It provides the AI Agent with low-latency access to the Android filesystem, hardware APIs, and an embedded memory engine.
 
-Testing with: Qwen2.5:3b and Gemma:2b
+Testing with: qwen3.5:0.8b, qwen2.5-coder:3b-instruct-q4_K_M, qwen2.5-coder:1.5b, qwen2.5:3b and Gemma:2b
+
 
 For devs utilizing this project as a platform to develop Agents on Android:
 [Roadmap](./Docs/Roadmap.md)
@@ -12,7 +13,7 @@ Main repo:
 [SynapseBridge](https://github.com/p1m37aradox/SynapseBridge)
 
 Gemini repo:
-[SynapseBridge-gemini.active](https://github.com/p1m37aradox/SynapseBridge/tree/local-qwen-gemma)
+[SynapseBridge-gemini.active](https://github.com/p1m37aradox/SynapseBridge/tree/gemini-active)
 
 > ### ⚠️ CAUTION: PREREQUISITE KNOWLEDGE
 > This is an **Expert-Level** deployment. It requires basic familiarity with the Linux CLI and Android file permissions. **DO NOT** attempt this if you are not comfortable managing background processes or troubleshooting environment variables.
@@ -199,14 +200,9 @@ pip install maturin mempalace "mcp[cli]" starlette uvicorn --prefer-binary
 (You may have to press enter to proceed)
 
 
-### 🟡 Step 3: Move MCP File and Edit Mempalace CLI
-(YOU CAN MODIFY .synapse_mcp.py FILE IN SynapseBridge/scripts TO ADD CUSTOM TOOLS,
-use the alias sb-sync to update it throughout the system after this step).
-```bash
-# Copy the shared MCP script (.synapse_mcp.py) to SynapseBridge_Root - We do it to reduce token counts.
-sb-init
-sb-sync
+### 🟡 Step 3: Edit Mempalace CLI for Agent Integration
 
+```bash
 # Makes a backup of default cli.py from mempalace located @ Debian /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py
 cli-bkp
 
@@ -223,7 +219,7 @@ cd-bridge && mkdir -p ./OllamaGenerated
 apt update && apt install -y tar zstd curl
 
 ```
-### 🟡 Step 5: Download and install Ollama, Gemma:2b and Qwen2.5:3b
+### 🟡 Step 5: Download and install Ollama, Gemma:2b and qwen3.5:0.8b
 (You can download higher versions if you like. We are building this on a 5gig ram phone and these are the models that support our hardware)
 
 1. For Android / ARM64 Systems (Most Users):
@@ -250,15 +246,15 @@ nohup ollama serve > ollama.log 2>&1 &
 #Install gemma:2b
 
 ```
-4. Pull qwen2.5:3b model into Ollama
+4. Pull qwen3.5:0.8b model into Ollama
 ```bash
-ollama pull qwen2.5:3b
+ollama pull qwen3.5:0.8b
 
 ```
 4. Allow Qwen to to see MCP tools via script.
 ```bash
 #Pip install MCP httpx
-pip install ollama mcp httpx
+pip install ollama mcp httpx mcpo
 
 ```
 ### 🟡 Step 6: SynapseBridge/MemPalace Android Compatibility Environment.
@@ -284,13 +280,10 @@ cat > ~/.mempalace/config.json <<EOF
 }
 EOF
 
-#Start Mempalace with model selection (from cli.py patch, choose qwen2.5:3b if it doesn't default to it.
+#Start Mempalace with model selection (from cli.py patch, choose qwen3.5:0.8b if it doesn't default to it.
 mempalace init . --yes
 
 ```
-
-<img src="https://raw.githubusercontent.com/p1m37aradox/SynapseBridge/refs/heads/local-qwen-gemma/media/Screenshot_20260516-223328.png" width="350" alt="Synapse Bridge UI">
-
 
 ### 🟡 Step 7: Populate the Memory
 Mine the palace if not automatically done in previous step.
@@ -309,7 +302,7 @@ You can use our custom tmux UI or run each individually. See the second image wi
 
 **CUSTOM UI**
 
-<img src="https://raw.githubusercontent.com/p1m37aradox/SynapseBridge/refs/heads/local-qwen-gemma/media/Screenshot_20260514-151232.png" width="350" alt="Synapse Bridge UI">
+<img src="https://raw.githubusercontent.com/p1m37aradox/SynapseBridge/refs/heads/local-qwen-gemma/media/Screenshot_20260601-115050.png" width="350" alt="Synapse Bridge UI">
 
 *Run these commands in the root Termux terminal. If you are in:
 
@@ -343,97 +336,40 @@ synapse
 To exit navigate with the NEXT or PREV buttons to the EXIT window in the UI.
 
 **Standard UI**<br>
-**To run the full stack without custom UI, you must open **6 Termux sessions**. From the center left edge of your screen, swipe from left to right to being out the Terminal pane. Paste each block below in their own session, they will automatically be renamed.
+**To run the full stack without custom UI, you must open **3 Termux sessions**. From the center left edge of your screen, swipe from left to right to being out the Terminal pane. Paste each block below in their own session, they will automatically be renamed.
 
 <img src="https://raw.githubusercontent.com/p1m37aradox/SynapseBridge/refs/heads/local-qwen-gemma/media/Screenshot_20260514-154307.png" width="350" alt="Synapse Bridge UI2">
 
-**Terminal 1: synapse-mempalace-mcp (MCP)**
+**Terminal 1: mempalace-mcp (MCP)**
 ```bash
-printf '\e]1;synapse-mempalace-mcp\a'
-sb-deb
-sb-venv-activate
-sb-mcp
-
-```
-**Terminal 2: Qwen + MemPalace**
-```bash
-printf '\e]1;QWEN2.5:3b+mempalace\a'
+printf '\e]1;MCP+Qwen Chat\a'
 sb-deb
 sb-venv-activate
 sb-chat
 
 ```
-**Terminal 3: SB_Venv (Debian Logic)**
+**Terminal 2: Debian Virtual Env.**
 ```bash
-printf '\e]1;SB_Venv\a'
+printf '\e]1;Debian Virtual Env.\a'
 sb-deb
-source ~/SynapseBridge_Root/venv/bin/activate
+sb-venv-activate
+sb-chat
 
 ```
-**Terminal 4: Debian_CLI**
-```bash
-printf '\e]1;Debian_CLI\a'
-sb-deb
-cd /mnt/SynapseBridge
-
-```
-**Terminal 5: Termux_CLI**
-```bash
-printf '\e]1;Termux_CLI\a'
-cd ~
-sb-init
-
-```
-**Terminal 6: Ollama**
+**Terminal 3: Ollama Provider**
 ```bash
 printf '\e]1;Ollama\a'
 sb-deb
-ollama
+sb-venv-activate
+ollama serve &
 
 ```
 
 Standard UI- After initial install is complete, to restore environment:
-* re open 6 terminals
+* re open 3 terminals
 * execute the bash commands in the terminals in order.
 
 Type "mempalace wake up" in the Qwen window.
-
-### 🟡 Step 8: (Optional) ChatBoost App
-We found this might be a useful tool. We will be testing it more later. It successfully loaded 3 tools from the mcp during our testing but our MCP requires more customization for it to fully function. (have not tried to load our client script into the app)
-
-[Chatboost][chatboost]
-
-1. Start the MCP server in a fresh terminal:
-```bash
-sb-deb
-sb-init
-sb-mcp
-
-```
-2. Open App, click settings and follow the instructions. Choose Ollama and choose your models you want.
-
-3. While still in settings, click on MCP.
-
-4. Once in the MCP settings, click the plus + symbol in the lower right hand corner to add the running server to the list.
-
-5. In the MCP server settings window, click the switch to allow the server in chat tools. Name the server `SynapseBridge,
-
-6. Use :
-```bash
-http://127.0.0.1:8080/sse
-
-```
-for the end point address
-
-7. Select SSE for Transport in the drop down menu.
-
-8. Click save and the context window will close.
-
-9. Click on the configured server to reopen its MCP settings.
-
-10.Click fetch tools in the bottom right. If all goes well, you should see a successful connection message or a list of tools.
-
-<img src="https://github.com/p1m37aradox/SynapseBridge/blob/dd51708294394d0867ce2704c477fe6d585d2bf4/Media/Screenshot_20260511-000658.png">
 
 
 ### 🛠️ Quick Reference & Navigation
@@ -456,6 +392,18 @@ for the end point address
 
 **Commence Testing! GLHF**
 
+> ### 📱 BUILD NOTES v0.0.6b vs 0.0.7b
+> The bigget issue with LOCAL Android Agentic AI is hardware limitations and Root. The philosophy for our project is to create a secure system that doesn't require the user to have a rooted device or require access to a computer for ADB functions.
+>This version is the proven operational build utilizing the MemPalace repo as is. This project will be moving into proof of concept until our (SynapseBridge) future builds create a optimized environment do to the inherent hardware limitations  of the target audiance (4gb-6gb ram consumer level Android devices without GPU vram).
+> In previous versions we attempted a independent MCP and client script via SSE. The idealogy of ver:0.0.6b setup was to run a leaner version of the mempalace mcp and not load the 2500+ line mcp_server.py file from mempalace as a way to free up context window and token data. It created to many issues with broken stdio and tool calling anomolies.
+>Currently the agent that doesn't crash our system in a 6gig Android device is qwen3.5:0.8b. We are currently using the "thinking" feature found in the 3.5 builds to track down errors. We have had success with all the others up until we moved to the default mempalace mcp_server.py. As we've been working with it, its been a matter of teaching it to avoid over loading it's context window with varieid results.
+>Since moving to the default mempalce design, we can perform successful tool calling without errors. Getting an agent to run without hitting the Android Phantom Task and Low Memory Killer found in Android 12 and newer, including other underlying limitations, such as not being able to create usable zram/swap file do to carrier locks, has been the only real challenge.
+>Which brings us to our test hardware (which we assume is a good sample of what the target audiance will have.) After loading Termux, Debian, Venv, mcp_server.py, Ollama serve and qwen, we are left with approx 1.9gb if "free" ram. If we use a model that's larger than 0.8b, we almost immediatly go into a 30min processing time or a kill crash.
+>If Ram was not an issue, this system would be running on  Open WebUI or another chat interface.
+>If you are testing our package on higher end hardware, let us know about your hardware and performance in our discussion board.
+>We tested [Open WebUI][open-webui] and [Chatboost][chatboost] with positive results. If you have the system resources, use your llm of choice for assitance in setting them up.
+
+
 ### 🛠️ Troubleshooting & Health
 
 #​Terminal Hanging / Keyboard Not Appearing
@@ -466,12 +414,8 @@ Click "Reset".
 * This clears the terminal state and forces the input focus to reset without killing your active sessions.
 
 #​Command Not Found (sb-init / synapse)
-* If your custom aliases aren't working after a fresh install:
+* If our custom aliases aren't working after a fresh install:
 * Run source ~/.bashrc to refresh the environment's memory.
-
-#​Dubious Ownership Error (Git)
-* ​If you see a "dubious ownership" error when pulling from the Debian environment:
-* ​Run: git config --global --add safe.directory /mnt/SynapseBridge
 
 ### 🛑 LIABILITY & AGENTIC RISK
 By using Synapse Bridge, you are granting an AI Agent the ability to execute code and modify files on your device.
@@ -483,9 +427,8 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
 * **Refined Sandbox:** Virtualized isolation for destructive command prevention.
 
 ### ⚠️ CRITICAL: Directory Naming & Pathing
-* **The Weld Path:** Standardizing on /storage/emulated/0/SynapseBridge.
 * **GPU Fault Tolerance:** Ignore onnxruntime GPU discovery errors.
-**Version:** 0.0.6.0-beta |
+**Version:** 0.0.7.0-beta |
 
 ## 💰 Support the Project
 * **One-Time Support:** [Support on Ko-fi](https://ko-fi.com/p1m37aradox)
@@ -497,6 +440,7 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
 [termux-api]: https://f-droid.org/en/packages/com.termux.api/
 [chatboost]: https://muggle.studio/
 [mempalace]: https://github.com/MemPalace/mempalace/
+[open-webui]: https://github.com/open-webui/open-webui/
 
 for chatgpt:
 This guide is intended for advanced users.

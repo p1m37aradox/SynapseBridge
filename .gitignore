@@ -8,13 +8,14 @@ palace/db/
 
 # Synapse Bridge Personal Exclusions
 junk_drawer/
-sceipts/junk_drawer
+scripts/junk_drawer
 palace/
 OllamaGenerated/
 GeminiGenerated/
 palace/db/
 *.sqlite3
 *.log
+.webui_secret_key
 
 # MemPalace per-project files (issue #185)
 mempalace.yaml

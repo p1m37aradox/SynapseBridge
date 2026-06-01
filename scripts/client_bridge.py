@@ -1,167 +1,198 @@
 import asyncio
-import ollama
-import os
-import re
+import httpx
 import json
-import logging
-import sys
-from datetime import datetime
+import time
 from mcp import ClientSession
-from mcp.client.sse import sse_client
+from mcp.client.stdio import stdio_client, StdioServerParameters
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
-# --- 1. LOGGING SETUP ---
-SHARED_LOG_DIR = "/mnt/SynapseBridge"
-CLIENT_LOG_FILE = os.path.join(SHARED_LOG_DIR, "qwen_chat_history.log")
-os.makedirs(SHARED_LOG_DIR, exist_ok=True)
+OLLAMA_URL = "http://localhost:11434/api/chat"
+MODEL_NAME = "qwen3.5:0.8b"
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(message)s",
-    handlers=[
-        logging.FileHandler(CLIENT_LOG_FILE),
-        logging.StreamHandler(sys.stdout)
+MEMORY_KEYWORDS = {
+    "remember", "save", "store", "recall", "forget", "search",
+    "memory", "memories", "memorize", "retrieve", "find", "lookup"
+}
+
+def needs_tools(text):
+    return any(word in text.lower() for word in MEMORY_KEYWORDS)
+
+async def stream_response(client, payload):
+    full_thinking = ""
+    full_content = ""
+    final_message = {}
+    in_thinking = False
+
+    async with client.stream("POST", OLLAMA_URL, json=payload, timeout=300.0) as response:
+        if response.status_code != 200:
+            print(f"\n❌ Server Error ({response.status_code})")
+            return None, None, None
+
+        async for line in response.aiter_lines():
+            if not line.strip():
+                continue
+
+            chunk = json.loads(line)
+            msg = chunk.get("message", {})
+
+            thinking_chunk = msg.get("thinking", "")
+            if thinking_chunk:
+                if not in_thinking:
+                    print("\n💭 Thinking: ", end="", flush=True)
+                    in_thinking = True
+                print(thinking_chunk, end="", flush=True)
+                full_thinking += thinking_chunk
+
+            content_chunk = msg.get("content", "")
+            if content_chunk:
+                if in_thinking:
+                    print("\n")
+                    in_thinking = False
+                    print("Qwen: ", end="", flush=True)
+                elif not full_content:
+                    print("\nQwen: ", end="", flush=True)
+                print(content_chunk, end="", flush=True)
+                full_content += content_chunk
+
+            if chunk.get("done"):
+                final_message = msg
+                final_message["thinking"] = full_thinking
+                final_message["content"] = full_content
+                print()
+
+    return full_thinking, full_content, final_message
+
+async def route_tool(client, user_input, tools_response):
+    tool_index = "\n".join(
+        f"- {tool.name}: {(tool.description or '').splitlines()[0]}"
+        for tool in tools_response.tools
+    )
+
+    router_messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are a tool router. Given a user request and a list of available tools, "
+                "respond ONLY with a JSON object like:\n"
+                '{"tool": "tool_name", "args": {"key": "value"}}\n'
+                "If no tool is needed, respond with: {\"tool\": null}\n"
+                "Do not explain. Do not add any other text."
+            )
+        },
+        {
+            "role": "user",
+            "content": f"Available tools:\n{tool_index}\n\nUser request: {user_input}"
+        }
     ]
-)
-# To Disable logging remove the # in front of logging on the next line.
-##logging.disable(logging.CRITICAL)
 
-logger = logging.getLogger("SynapseClient")
+    resp = await client.post(
+        OLLAMA_URL,
+        json={"model": MODEL_NAME, "messages": router_messages, "stream": False, "think": False},
+        timeout=300.0
+    )
+    result = resp.json()
+    content = result.get("message", {}).get("content", "").strip()
 
-def log_interaction(role, content):
-    logger.info(f"[{role.upper()}]: {content}")
+    try:
+        clean = content.replace("```json", "").replace("```", "").strip()
+        parsed = json.loads(clean)
+        tool_name = parsed.get("tool")
+        tool_args = parsed.get("args", {})
+        if tool_name:
+            return tool_name, tool_args
+    except Exception:
+        pass
 
-# --- 2. CONFIGURATION ---
-SERVER_URL = "http://127.0.0.1:8080/sse"
-
-####YOU MAY CHANGE THE MODEL HERE###
-MODEL = "qwen2.5:3b" 
-CONTEXT_PATH = "/mnt/SynapseBridge/scripts/context.txt"
+    return None, None
 
 async def main():
-    print(f"🔗 Connecting to Synapse Bridge at {SERVER_URL}...")
-    log_interaction("System", f"Connecting to Bridge. Log: {CLIENT_LOG_FILE}")
-    
-    async with sse_client(SERVER_URL) as streams:
-        async with ClientSession(streams[0], streams[1]) as session:
+    server_params = StdioServerParameters(
+        command="python",
+        args=["-m", "mempalace.mcp_server"]
+    )
+
+    print("Launching MemPalace MCP via stdio...")
+
+    async with stdio_client(server_params) as (read_stream, write_stream):
+        async with ClientSession(read_stream, write_stream) as session:
             await session.initialize()
-            
-            # --- Tool Discovery ---
-            tools_data = await session.list_tools()
-            ollama_tools = []
-            server_tool_names = [tool.name for tool in tools_data.tools]
-            
-            for tool in tools_data.tools:
-                ollama_tools.append({
-                    'type': 'function',
-                    'function': {
-                        'name': tool.name,
-                        'description': tool.description,
-                        'parameters': tool.inputSchema,
-                    }
-                })
-            
-            print(f"✅ {MODEL} armed with {len(ollama_tools)} tools.")
+            print("Connected to MemPalace!")
+
+            tools_response = await session.list_tools()
+            print(f"Loaded {len(tools_response.tools)} MemPalace tools.")
+            print("\n--- Chat Session Started (Type 'exit' to quit) ---")
+
+            messages = [
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a helpful assistant with access to a memory system. "
+                        "Only call tools when the user explicitly asks to save, retrieve, "
+                        "search, or manage memories. For general conversation, respond directly."
+                    )
+                }
+            ]
 
             while True:
-                user_input = input("\n[Synapse User] > ")
-                if user_input.lower() in ['exit', 'quit']: 
+                try:
+                    user_input = input("\nYou: ")
+                    if user_input.strip().lower() == "exit":
+                        print("Ending session.")
+                        break
+                    if not user_input.strip():
+                        continue
+                except (KeyboardInterrupt, EOFError):
+                    print("\nEnding session.")
                     break
-                
-                log_interaction("User", user_input)
-                
-                # Fetch fresh context
-                if os.path.exists(CONTEXT_PATH):
-                    with open(CONTEXT_PATH, 'r') as f:
-                        system_context = f.read()
-                else:
-                    system_context = "You are the Synapse Bridge Agent."
 
-                # Initialize conversation history for this turn
-                messages = [
-                    {'role': 'system', 'content': system_context},
-                    {'role': 'user', 'content': user_input}
-                ]
+                messages.append({"role": "user", "content": user_input})
 
-                # Initial chat call
-                response = ollama.chat(
-                    model=MODEL,
-                    messages=messages,
-                    tools=ollama_tools,
-                    options={
-                        "num_ctx": 4096,     
-                        "temperature": 0.3,  
-                        "num_predict": 1024 
-                    }
-                )
+                async with httpx.AsyncClient() as client:
+                    try:
+                        if needs_tools(user_input):
+                            print("\n🔍 Routing to tool...")
+                            tool_name, tool_args = await route_tool(client, user_input, tools_response)
 
-                message = response.get('message', {})
-                tool_calls = message.get('tool_calls', [])
+                            if tool_name:
+                                print(f"\n⚙️  [MemPalace]: {tool_name}...")
+                                print(f"   Args: {json.dumps(tool_args, indent=2)}")
 
-                if tool_calls:
-                    messages.append(message) # Save Qwen's intent
+                                t_start = time.time()
+                                tool_result = await session.call_tool(name=tool_name, arguments=tool_args)
+                                elapsed = time.time() - t_start
 
-                    for tool_call in tool_calls:
-                        name = tool_call['function']['name']
-                        
-                        # Fuzzy matching logic
-                        if name not in server_tool_names:
-                            if name.startswith('mempal_'):
-                                alt_name = name.replace('mempal_', 'mempalace_')
-                                if alt_name in server_tool_names:
-                                    log_interaction("System", f"Fuzzy Match: {name} -> {alt_name}")
-                                    name = alt_name
+                                print(f"   ✅ Completed in {elapsed:.2f}s")
 
-                        raw_args = tool_call['function']['arguments']
-                        clean_args = {k: (v['value'] if isinstance(v, dict) and 'value' in v else v) 
-                                     for k, v in raw_args.items()}
+                                tool_text = "Tool executed successfully."
+                                if hasattr(tool_result, 'content') and tool_result.content:
+                                    if isinstance(tool_result.content, list):
+                                        tool_text = getattr(tool_result.content[0], 'text', str(tool_result.content[0]))
+                                    else:
+                                        tool_text = getattr(tool_result.content, 'text', str(tool_result.content))
 
-                        log_interaction("System", f"Executing Tool: {name}({clean_args})")
-                        
-# ... (Imports and Setup remain same) ...
+                                print(f"   📦 Raw result ({len(tool_text)} chars):\n{tool_text[:500]}")
 
-                        try:
-                            result = await session.call_tool(name, clean_args)
-                            
-                            # 1. Extract the text (which the server has now formatted with [wing/room])
-                            tool_output_text = "\n".join(
-                                [item.text for item in result.content if hasattr(item, 'text')]
-                            )
-                            
-                            # 2. Log it specifically as a Palace interaction
-                            if tool_output_text:
-                                log_interaction("Palace", tool_output_text)
+                                messages.append({"role": "tool", "content": tool_text})
 
-                                context_injection = f"\n### CONTEXT FROM MEMORY ###\n{tool_output_text}\n"
-                                messages.append({"role": "system", "content": context_injection})
-                            
-                            # 4. Standard tool result reporting
-                            messages.append({
-                                'role': 'tool',
-                                'content': tool_output_text,
-                                'name': name
-                            })
+                        payload = {
+                            "model": MODEL_NAME,
+                            "messages": messages,
+                            "stream": True,
+                            "think": True
+                        }
 
-                        except Exception as e:
-                            error_msg = str(e)
-                            log_interaction("Error", error_msg)
-                            messages.append({
-                                'role': 'tool',
-                                'content': f"Error: {error_msg}",
-                                'name': name
-                            })
+                        _, _, final_message = await stream_response(client, payload)
 
-                    # Final summary call
-                    final_response = ollama.chat(model=MODEL, messages=messages)
-                    final_content = final_response.get('message', {}).get('content', '')
-                    if final_content:
-                        log_interaction("Qwen", final_content)
-                else:
-                    content = message.get('content', '')
-                    if content:
-                        log_interaction("Qwen", content)
+                        if final_message:
+                            messages.append(final_message)
+                        else:
+                            messages.pop()
+
+                    except Exception as e:
+                        print(f"\n❌ Error: {type(e).__name__}: {e}")
+                        messages.pop()
+                        continue
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        log_interaction("System", "Bridge Client Terminated.")
+    asyncio.run(main())

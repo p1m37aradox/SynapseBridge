@@ -1,11 +1,18 @@
 # --- SynapseBridge Master Alias File (v0.0.6.2b) ---
 
+
 # 1. Environment & Paths
 export SB_VENV_PATH='/root/SynapseBridge_Root/venv/bin'
 export SB_PALACE='/mnt/SynapseBridge/palace'
 export SB_AI_OUT='/mnt/SynapseBridge/OllamaGenerated'
+#export OLLAMA_HOST=0.0.0.0:11434
 
-# --- THE PERMISSION WELD ---
+# Ollama Mobile Optimizations (Value = Max # Of Threads Allowes)
+export OLLAMA_NUM_CTX=2048
+export OLLAMA_NUM_PARALLEL=4
+
+
+# --- AUTOMATED LOGIC PERMISSION ---
 # This ensures that every time the environment is initialized,
 # the logic scripts are granted execution rights automatically.
 if [ -d "/mnt/SynapseBridge/scripts" ]; then
@@ -14,41 +21,64 @@ fi
 
 # 2. Navigation & Git
 
+    #Activate SynapseBridge_Root Python3.13 Virtual Environment
     alias sb-venv-activate='source /root/SynapseBridge_Root/venv/bin/activate -- bash -c "source $HOME/storage/shared/SynapseBridge/scripts/.sb-env-master; exec bash"'
-    
+
+    #Shared 'User Local' Storage
     alias cd-bridge='cd /mnt/SynapseBridge'
     
-    alias cd-sbroot='cd /mnt/SynapseBridge_Root'
+    #Open-WebUI On Port 8090
+    #alias sb-owui='open-webui serve --port 8090'
     
+    #open-webui serve --port 8090
+    
+    #Debian and (venv)Debian SynapseBridge_Root
+    alias cd-sbroot='cd ~/SynapseBridge_Root'
+    
+    #PYTHON MEMPALACE AND SITE FILES
+    alias cd-short='cd ~/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace'
+        #because cdcdcdcdcdcd
+    
+    #Junk Drawer
     alias cd-bin='cd /mnt/Junk'
     
-    alias sb-troot='/usr/local/bin'
-
+    #Termux bin/
+    alias cd-troot='cd /usr/local/bin'
+    
+    #git Status of Project
     alias g-status='cd /mnt/SynapseBridge && git status'
-
+    
+    #Pull git repo
     #alias g-pull='cd /mnt/SynapseBridge && git pull origin local-qwen-gemma'
+    
+#####Memory & Logic (MemPalace / MCP)
 
-# 3. Memory & Logic (MemPalace / MCP)
-
+    #Launches the SSE and HTTP Server w/MCP Tools
     alias sb-mcp='python3 /root/SynapseBridge_Root/scripts/.synapse_mcp.py'
     
+    #Shorthand for mempalace mine
     alias sb-mine='$SB_VENV_PATH/mempalace --palace $SB_PALACE mine /mnt/SynapseBridge --wing "SynapseBridge-Main"'
     
+    #Shorthand for mempalace wake-up
     alias sb-wake='$SB_VENV_PATH/mempalace wake-up'
     
+    #Launches The Client and LLM
     alias sb-chat='python3 /mnt/SynapseBridge/scripts/client_bridge.py'
+    
+    alias dev='sb-init'
+    
     
 #---------------TOOLS---------------
 #Makes a shadow copy of .synapse_mcp and puts it in the root.
 
-    alias sb-sync='cd-bridge && chmod +x ./scripts/.synapse_mcp.py && cp ./scripts/.synapse_mcp.py /root/SynapseBridge_Root/scripts/.synapse_mcp.py && echo \"✅ Root copy updated.\"'
-    
-    
+# Update Edited Server File From Shared Zone To Root Zone:
+alias sb-sync='cp /mnt/SynapseBridge/scripts/.synapse_mcp.py /root/SynapseBridge_Root/scripts/.synapse_mcp.py && echo \"✅ Root copy updated.\"'
+
 # Makes a backup of default cli.py from mempalace
     alias cli-bkp='cp /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py /root/SynapseBridge_Root/venv/lib/python3.13/site-packages/mempalace/cli.py.bak'
 
 # Executes the cli patch script.
-    alias mempalace-cli-patch='cd-bridge && chmod +x ./scripts/.cli_patch.py
+    alias mempalace-cli-patch='chmod +x /mnt/SynapseBridge/scripts/scripts/.cli_patch.py
     python3 /mnt/SynapseBridge/scripts/.cli_patch.py'
 
 # Revert the CLI to its original state
@@ -75,10 +105,11 @@ fi
     #alias sb-clip='/mnt/SynapseBridge/scripts/sb-clip.sh'
 
 # 6. Launch Command
-#Currently only in Termux .bashrc file @ root
+#Only Termux .bashrc file @ root
     ##alias synapse='proot-distro login debian --bind ~/storage/shared/SynapseBridge:/mnt/SynapseBridge -- bash /mnt/SynapseBridge/scripts/UI_main.sh'
 
-# Colors For You To Get Your Attention When You Launch The Launch Command From The Wrong Location.
+# Colors For You To Get Your Attention When You Launch The Launch Command From The Wrong Location. Wobbajack wabba jack wabba jack.
+#Wabbajack?
 
 ##='\e[m'
 
@@ -92,7 +123,6 @@ NC='\e[0m' # No Color (Reset)
 
 # Use them easily
 echo -e "${GREEN}Scripts granted execution rights.${NC}"
-
 
 # --- Logic Gate: Directory Protection ---
 
