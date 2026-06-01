@@ -394,12 +394,18 @@ Type "mempalace wake up" in the Qwen window.
 
 > ### 📱 BUILD NOTES v0.0.6b vs 0.0.7b
 > The bigget issue with LOCAL Android Agentic AI is hardware limitations and Root. The philosophy for our project is to create a secure system that doesn't require the user to have a rooted device or require access to a computer for ADB functions.
+> 
 >This version is the proven operational build utilizing the MemPalace repo as is. This project will be moving into proof of concept until our (SynapseBridge) future builds create a optimized environment do to the inherent hardware limitations  of the target audiance (4gb-6gb ram consumer level Android devices without GPU vram).
+> 
 > In previous versions we attempted a independent MCP and client script via SSE. The idealogy of ver:0.0.6b setup was to run a leaner version of the mempalace mcp and not load the 2500+ line mcp_server.py file from mempalace as a way to free up context window and token data. It created to many issues with broken stdio and tool calling anomolies.
+> 
 >Currently the agent that doesn't crash our system in a 6gig Android device is qwen3.5:0.8b. We are currently using the "thinking" feature found in the 3.5 builds to track down errors. We have had success with all the others up until we moved to the default mempalace mcp_server.py. As we've been working with it, its been a matter of teaching it to avoid over loading it's context window with varieid results.
+> 
 >Since moving to the default mempalce design, we can perform successful tool calling without errors. Getting an agent to run without hitting the Android Phantom Task and Low Memory Killer found in Android 12 and newer, including other underlying limitations, such as not being able to create usable zram/swap file do to carrier locks, has been the only real challenge.
+> 
 >Which brings us to our test hardware (which we assume is a good sample of what the target audiance will have.) After loading Termux, Debian, Venv, mcp_server.py, Ollama serve and qwen, we are left with approx 1.9gb if "free" ram. If we use a model that's larger than 0.8b, we almost immediatly go into a 30min processing time or a kill crash.
 >If Ram was not an issue, this system would be running on  Open WebUI or another chat interface.
+> 
 >If you are testing our package on higher end hardware, let us know about your hardware and performance in our discussion board.
 >We tested [Open WebUI][open-webui] and [Chatboost][chatboost] with positive results. If you have the system resources, use your llm of choice for assitance in setting them up.
 
