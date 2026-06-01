@@ -1,4 +1,7 @@
 PASTE AS IS INTO A ANDROID LLM PROMPT
+**THIS BUILD IS OUTDATED**
+**NAVIGATE TO "local-qwen-gemma"BRANCH
+FOR CURRENT STATE OF THE PROJECT**
 
 ### 🌉 Synapse Bridge v0.0.4b
 A mobile agent framework for Android that enables desktop LLMs or custom agent builds to interact with local tools, files, and device capabilities through a secure MCP-based middleware layer.
