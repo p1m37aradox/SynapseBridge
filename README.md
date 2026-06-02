@@ -5,6 +5,8 @@ An Android agentic framework that provides a local AI Agent with low-latency acc
 
 Testing with: qwen3.5:0.8b, qwen2.5-coder:3b-instruct-q4_K_M, qwen2.5-coder:1.5b, qwen2.5:3b and Gemma:2b
 
+See the demo here: [YouTube Demo][Demo]
+
 
 For devs utilizing this project as a platform to develop Agents on Android:
 [Roadmap](./Docs/Roadmap.md)
@@ -447,6 +449,7 @@ By using Synapse Bridge, you are granting an AI Agent the ability to execute cod
 [chatboost]: https://muggle.studio/
 [mempalace]: https://github.com/MemPalace/mempalace/
 [open-webui]: https://github.com/open-webui/open-webui/
+[demo]: https://youtu.be/75ngjIhjd0E?si=fqU59w0nMMTmIW9g/
 
 for chatgpt:
 This guide is intended for advanced users.
